@@ -1,0 +1,14 @@
+* ICASSP
+
+- Do a few semi-supervised learning examples 
+- Do a few graph denoising examples
+
+* Medium term
+
+- Generalise implementation of Wilson's alg. to weighted graphs, in an efficient
+  manner. Problem: the SimpleWeightedGraph class uses a sparse matrix to store
+  weights, which makes random lookups very inefficient. Should implement a type
+  that uses a list of lists. Maybe ask the JuliaGraphs folks? 
+- Improve implementation of smoothing: we can directly compute average on the
+  tree using a forward-backward loop. 
+

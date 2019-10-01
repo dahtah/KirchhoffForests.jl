@@ -47,6 +47,17 @@ function smooth_over_partition(G :: SimpleGraph,root :: Array{Int64,1},y :: Arra
     xhat
 end
 
+function smooth_over_partition(G :: SimpleGraph,root :: Array{Int64,1},Y :: Array)
+    xhat = zeros(size(Y))
+    #    ysum = weighted_sum_by(y,deg,state.root)
+    ysum = sum_by(Y,root)
+    for v in vertices(G)
+        xhat[v,:] = ysum[root[v],:]
+    end
+    xhat
+end
+
+
 
 function sure(y,xhat,nroots,s2)
     err = sum((y .- xhat).^2)
@@ -103,6 +114,18 @@ function smooth(G :: SimpleGraph{T},q,y :: Vector) where T
     q*((L+q*I)\y)
 end
 
+function smooth(G :: SimpleGraph{T},q,Y :: Matrix) where T
+    L=laplacian_matrix(G)
+    q*((L+q*I)\Y)
+end
+
+function smooth(G :: SimpleGraph{T},q,Y :: SparseMatrixCSC) where T
+    L=laplacian_matrix(G)
+    C = cholesky(L+q*I)
+    q*(C\Y)
+end
+
+
 function smooth_rf(G :: SimpleGraph{T},q,y :: Vector;nrep=10,variant=1) where T
     xhat = zeros(Float64,length(y));
     nr = 0;
@@ -118,6 +141,22 @@ function smooth_rf(G :: SimpleGraph{T},q,y :: Vector;nrep=10,variant=1) where T
     (est=xhat ./ nrep,nroots=nr/nrep)
 end
 
+function smooth_rf(G :: SimpleGraph{T},q,Y :: Matrix;nrep=10,variant=1) where T
+    xhat = zeros(size(Y));
+    nr = 0;
+    for indr in Base.OneTo(nrep)
+        rf = random_forest(G,q)
+        nr += rf.nroots
+        if variant==1
+            xhat += Y[rf.root,:]
+        elseif variant==2
+            xhat += smooth_over_partition(G,rf.root,Y)
+        end
+    end
+    (est=xhat ./ nrep,nroots=nr/nrep)
+end
+
+
 function sum_by(v :: Array{T,1}, g :: Array{Int64,1}) where T
     cc = spzeros(Int64,length(v))
     vv = spzeros(Float64,length(v))
@@ -128,6 +167,21 @@ function sum_by(v :: Array{T,1}, g :: Array{Int64,1}) where T
     nz = findnz(vv)
     for i in nz[1]
         vv[i] /= cc[i]
+    end
+    vv
+end
+
+function sum_by(v :: Array{T,2}, g :: Array{Int64,1}) where T
+    cc = spzeros(Int64,length(v))
+    vv = spzeros(Float64,size(v,1),size(v,2))
+    for i in 1:size(v,1)
+#        @show size(vv[g[i],:]),size(v[i,:])
+        vv[g[i],:] += v[i,:]
+        cc[g[i]] += 1
+    end
+    nz = findnz(cc)
+    for i in nz[1]
+        vv[i,:] /= cc[i]
     end
     vv
 end

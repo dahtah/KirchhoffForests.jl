@@ -75,20 +75,23 @@ end
 function avg_rf(roots,Y)
     n = length(roots)
     m = size(Y,2)
-    rk = denserank(roots)
+    rk = Int.(denserank(roots))
     nroots = maximum(rk)
     Z = zeros(nroots,m)
     ns = zeros(Int,nroots)
-    for i = 1:n
+    @inbounds for i = 1:n
         r = rk[i]
         nc = ns[r]+1
-        Z[r,:] = ((nc-1)/nc)*Z[r,:]+Y[i,:]/nc
+        @inbounds for j = 1:m
+            Z[r,j] *= ((nc-1)/nc)
+            Z[r,j] += Y[i,j]/nc
+        end
         ns[r] = nc
     end
-    X = zeros(n,m)
-    for i = 1:n
+    X = Matrix{Float64}(undef,n,m)
+    @inbounds for i = 1:n
         r = rk[i]
-        for j=1:m
+        @inbounds for j=1:m
             X[i,j] = Z[r,j]
         end
     end

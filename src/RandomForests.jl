@@ -1,5 +1,6 @@
 module RandomForests
 using LightGraphs,LinearAlgebra,SparseArrays
+import StatsBase.denserank
 export random_forest,smooth,smooth_rf
 
 
@@ -47,15 +48,15 @@ function smooth_over_partition(G :: SimpleGraph,root :: Array{Int64,1},y :: Arra
     xhat
 end
 
-function smooth_over_partition(G :: SimpleGraph,root :: Array{Int64,1},Y :: Array)
-    xhat = zeros(size(Y))
-    #    ysum = weighted_sum_by(y,deg,state.root)
-    ysum = sum_by(Y,root)
-    for v in vertices(G)
-        xhat[v,:] = ysum[root[v],:]
-    end
-    xhat
-end
+# function smooth_over_partition(G :: SimpleGraph,root :: Array{Int64,1},Y :: Array)
+#     xhat = zeros(size(Y))
+#     #    ysum = weighted_sum_by(y,deg,state.root)
+#     ysum = sum_by(Y,root)
+#     for v in vertices(G)
+#         xhat[v,:] = ysum[root[v],:]
+#     end
+#     xhat
+# end
 
 
 
@@ -70,6 +71,29 @@ function random_successor(G::SimpleGraph{T},i :: T) where T <: Int
     rand(nbrs)
 end
 
+
+function avg_rf(roots,Y)
+    n = length(roots)
+    m = size(Y,2)
+    rk = denserank(roots)
+    nroots = maximum(rk)
+    Z = zeros(nroots,m)
+    ns = zeros(Int,nroots)
+    for i = 1:n
+        r = rk[i]
+        nc = ns[r]+1
+        Z[r,:] = ((nc-1)/nc)*Z[r,:]+Y[i,:]/nc
+        ns[r] = nc
+    end
+    X = zeros(n,m)
+    for i = 1:n
+        r = rk[i]
+        for j=1:m
+            X[i,j] = Z[r,j]
+        end
+    end
+    X
+end
 
 function smooth_wilson_adapt(G :: SimpleGraph{T},q,y :: Vector;nrep=10,alpha=.5,step="fixed") where T
     nr = 0;
@@ -135,7 +159,7 @@ function smooth_rf(G :: SimpleGraph{T},q,y :: Vector;nrep=10,variant=1) where T
         if variant==1
             xhat += y[rf.root]
         elseif variant==2
-            xhat += smooth_over_partition(G,rf.root,y)
+            xhat += avg_rf(rf.root,y)
         end
     end
     (est=xhat ./ nrep,nroots=nr/nrep)
@@ -150,7 +174,7 @@ function smooth_rf(G :: SimpleGraph{T},q,Y :: Matrix;nrep=10,variant=1) where T
         if variant==1
             xhat += Y[rf.root,:]
         elseif variant==2
-            xhat += smooth_over_partition(G,rf.root,Y)
+            xhat += avg_rf(rf.root,Y)
         end
     end
     (est=xhat ./ nrep,nroots=nr/nrep)

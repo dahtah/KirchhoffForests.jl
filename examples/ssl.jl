@@ -41,8 +41,7 @@ function ssl(G,Y,q;method="exact",nrep=10)
     elseif (method=="xtilde")
         S = smooth_rf(G,q,Y;nrep=nrep,variant=1).est
     elseif (method=="xbar")
-        S = smooth_rf(G,q,Y;nrep=nrep,variant=1).est
+        S = smooth_rf(G,q,Y;nrep=nrep,variant=2).est
     end
     map((v) -> v[2],argmax(S,dims=2))
 end
-

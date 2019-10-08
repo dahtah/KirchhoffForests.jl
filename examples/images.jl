@@ -1,4 +1,6 @@
 using ImageView, TestImages, Gtk.ShortNames, Images
+using ImageMagick
+
 
 function denoise(im;q=.4,nrep=20)
     nx = size(im,1)
@@ -27,5 +29,3 @@ function demo_denoise(imname="lena",q=.6)
     y = im+randn(size(im))*.1
     denoise(y;q=q);
 end
-
-

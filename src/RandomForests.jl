@@ -174,7 +174,7 @@ function smooth_wilson_adapt(G :: SimpleGraph{T},q,y :: Vector;nrep=10,alpha=.5,
     (xhat=xhat,nroots=nr/nrep)
 end
 
-function smooth(G :: SimpleGraph{T},q :: Float,y :: Vector) where T
+function smooth(G :: SimpleGraph{T},q :: Float64,y :: Vector) where T
     L=laplacian_matrix(G)
     q*((L+q*I)\y)
 end
@@ -185,7 +185,7 @@ function smooth(G :: SimpleGraph{T},q :: Vector,y :: Vector) where T
     Q*((L+Q)\y)
 end
 
-function smooth(G :: SimpleGraph{T},q :: Float,Y :: Matrix) where T
+function smooth(G :: SimpleGraph{T},q :: Float64,Y :: Matrix) where T
     L=laplacian_matrix(G)
     q*((L+q*I)\Y)
 end
@@ -196,7 +196,7 @@ function smooth(G :: SimpleGraph{T},q :: Vector,Y :: Matrix) where T
     Q*((L+Q)\Y)
 end
 
-function smooth(G :: SimpleGraph{T},q :: Float,Y :: SparseMatrixCSC) where T
+function smooth(G :: SimpleGraph{T},q :: Float64,Y :: SparseMatrixCSC) where T
     L=laplacian_matrix(G)
     C = cholesky(L+q*I)
     q*(C\Y)

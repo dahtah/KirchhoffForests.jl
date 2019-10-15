@@ -182,7 +182,7 @@ end
 function smooth(G :: SimpleGraph{T},q :: Vector,y :: Vector) where T
     L=laplacian_matrix(G)
     Q = diagm(0=>q)
-    Q*((L+Q)\y)
+    (L+Q)\(Q*y)
 end
 
 function smooth(G :: SimpleGraph{T},q :: Float64,Y :: Matrix) where T
@@ -193,7 +193,7 @@ end
 function smooth(G :: SimpleGraph{T},q :: Vector,Y :: Matrix) where T
     L=laplacian_matrix(G)
     Q = diagm(0=>q)
-    Q*((L+Q)\Y)
+    (L+Q)\(Q*Y)
 end
 
 function smooth(G :: SimpleGraph{T},q :: Float64,Y :: SparseMatrixCSC) where T
@@ -206,7 +206,7 @@ function smooth(G :: SimpleGraph{T},q :: Vector,Y :: SparseMatrixCSC) where T
     L=laplacian_matrix(G)
     Q = diagm(0=>q)
     C = cholesky(L+Q)
-    Q*(C\Y)
+    C\(Q*Y)
 end
 
 

@@ -1,10 +1,27 @@
 module RandomForests
 using LightGraphs,LinearAlgebra,SparseArrays
-import StatsBase.denserank
-export random_forest,smooth,smooth_rf
+import StatsBase.denserank,Statistics.mean
+export random_forest,smooth,smooth_rf,smooth_rf_adapt
 
+"""
+    random_forest(G::AbstractGraph,q)
 
-function random_forest(G::Graph,q::AbstractFloat)
+Run Wilson's algorithm on G to generate a random forest with parameter "q". q determines the probability that
+the random walk is interrupted at a node. If q is a scalar, that probability equals q/(q+d[i]) at node i with
+degree d[i]. If q is a vector, it equals q[i]/(q[i]+d[i]).
+
+# Example
+
+'''
+using LightGraphs
+G = grid([3,3])
+random_forest(G,.4)
+q_varying = rand(nv(G))
+random_forest(G,q_varying)
+'''
+
+"""
+function random_forest(G::AbstractGraph,q::AbstractFloat)
     roots = Set{Int64}()
     root = zeros(Int64,nv(G))
     nroots = Int(0)
@@ -38,7 +55,7 @@ function random_forest(G::Graph,q::AbstractFloat)
     (next=next,roots=roots,nroots=nroots,root=root)
 end
 
-function random_forest(G::Graph,q::AbstractVector)
+function random_forest(G::AbstractGraph,q::AbstractVector)
     @assert length(q)==nv(G)
     roots = Set{Int64}()
     root = zeros(Int64,nv(G))
@@ -76,27 +93,15 @@ end
 
 
 
-function smooth_over_partition(G :: SimpleGraph,root :: Array{Int64,1},y :: Array{Float64,1})
-    xhat = zeros(Float64,nv(G))
+function avg_rf(root :: Array{Int64,1},y :: Array{Float64,1})
+    xhat = zeros(Float64,length(y))
     #    ysum = weighted_sum_by(y,deg,state.root)
     ysum = sum_by(y,root)
-    for v in vertices(G)
+    for v in 1:length(xhat)
         xhat[v] = ysum[root[v]]
     end
     xhat
 end
-
-# function smooth_over_partition(G :: SimpleGraph,root :: Array{Int64,1},Y :: Array)
-#     xhat = zeros(size(Y))
-#     #    ysum = weighted_sum_by(y,deg,state.root)
-#     ysum = sum_by(Y,root)
-#     for v in vertices(G)
-#         xhat[v,:] = ysum[root[v],:]
-#     end
-#     xhat
-# end
-
-
 
 function sure(y,xhat,nroots,s2)
     err = sum((y .- xhat).^2)
@@ -136,42 +141,72 @@ function avg_rf(roots,Y)
     X
 end
 
-function smooth_wilson_adapt(G :: SimpleGraph{T},q,y :: Vector;nrep=10,alpha=.5,step="fixed") where T
+function smooth_rf_pcg(G :: SimpleGraph{T},q,y :: Vector;nrep=10,alpha=.5,step="fixed",nsteps=10) where T
+    nr = 0;
+    rf = [random_forest(G,q) for _ in 1:nrep]
+    xt = y
+    L = laplacian_matrix(G)
+    cfun = (x) -> (q/2)*sum((x .- y).^2) + .5*x'*L*x
+    gamma =alpha
+    for indr in 1:nsteps
+        gr = q*xt + L*xt - q*y
+        dir = mean([avg_rf(r.root,gr) for r in rf])
+        #dir = (q*U)
+        if (step == "optimal")
+            u = A*dir
+            gamma = ( sum(xhat .* (A*u)) - dot(y,u)   )/dot(u,u)
+            @show gamma
+        elseif (step=="backtrack")
+            curr = cfun(xt)
+            gamma = alpha
+#            while (norm(A*(xhat-gamma*dir) - y) > curr)
+            while (cfun(xt-gamma*dir) > curr)
+                gamma = gamma/2
+            end
+            @show gamma
+        end
+        xt -= gamma*dir
+        @show cfun(xt)
+    end
+    (est=xt,cost = cfun(xt))
+end
+
+
+function smooth_rf_adapt(G :: SimpleGraph{T},q,y :: Vector;nrep=10,alpha=.5,step="fixed") where T
     nr = 0;
     rf = random_forest(G,q)
-    xhat = smooth_over_partition(G,rf.root,y)
+    xhat = avg_rf(rf.root,y)
 #    @show xhat
-    L = lap(G)
+    L = laplacian_matrix(G)
+    cfun = (x) -> (q/2)*sum((x .- y).^2) + .5*x'*L*x
     A = (L+q*I)/q
     res = A*xhat - y
     gamma =alpha
 #    @show res
-    #    @show norm(res)
-
 
     for indr in 2:nrep
         rf = random_forest(G,q)
-        dir = smooth_over_partition(G,rf.root,res)
+        dir = avg_rf(rf.root,res)
         if (step == "optimal")
             u = A*dir
-            gamma = ( xhat'*A*u - dot(y,u)   )/dot(u,u)
- #           @show gamma
+            gamma = ( sum(xhat .* (A*u)) - dot(y,u)   )/dot(u,u)
+            @show gamma
         elseif (step=="backtrack")
-            curr = norm(res)
+            curr = cfun(xhat)
             gamma = alpha
-            while (norm(A*(xhat-gamma*dir) - y) > curr)
+#            while (norm(A*(xhat-gamma*dir) - y) > curr)
+            while (cfun(xhat-gamma*dir) > curr)
                 gamma = gamma/2
             end
-#            @show gamma
+            @show gamma
         end
 
         xhat -= gamma*dir
         res = A*xhat - y
-#        @show res
- #       @show norm(res)
+        @show cfun(xhat)
         nr += rf.nroots
     end
-    (xhat=xhat,nroots=nr/nrep)
+    (est=xhat,nroots=nr/nrep)
 end
 
 function smooth(G :: SimpleGraph{T},q,y :: Vector) where T
@@ -191,24 +226,28 @@ function smooth(G :: SimpleGraph{T},q,Y :: SparseMatrixCSC) where T
 end
 
 
-function smooth_rf(G :: SimpleGraph{T},q,y :: Vector;nrep=10,variant=1) where T
-    xhat = zeros(Float64,length(y));
-    nr = 0;
-    for indr in Base.OneTo(nrep)
-        rf = random_forest(G,q)
-        nr += rf.nroots
-        if variant==1
-            xhat += y[rf.root]
-        elseif variant==2
-            xhat += avg_rf(rf.root,y)
-        end
-    end
-    (est=xhat ./ nrep,nroots=nr/nrep)
-end
+# function smooth_rf(G :: SimpleGraph{T},q,y :: Vector;nrep=10,variant=1) where T
+#     xhat = zeros(Float64,length(y));
+#     nr = 0;
+#     for indr in Base.OneTo(nrep)
+#         rf = random_forest(G,q)
+#         nr += rf.nroots
+#         if variant==1
+#             xhat += y[rf.root]
+#         elseif variant==2
+#             xhat += avg_rf(rf.root,y)
+#         end
+#     end
+#     (est=xhat ./ nrep,nroots=nr/nrep)
+# end
 
-function smooth_rf(G :: SimpleGraph{T},q,Y :: Matrix;nrep=10,variant=1) where T
+
+function smooth_rf(G :: AbstractGraph,q,Y;nrep=10,variant=1,mean_correction=false) 
     xhat = zeros(size(Y));
     nr = 0;
+    Ym = 0;
+    if (mean_correction)
+    end
     for indr in Base.OneTo(nrep)
         rf = random_forest(G,q)
         nr += rf.nroots
@@ -218,7 +257,13 @@ function smooth_rf(G :: SimpleGraph{T},q,Y :: Matrix;nrep=10,variant=1) where T
             xhat += avg_rf(rf.root,Y)
         end
     end
-    (est=xhat ./ nrep,nroots=nr/nrep)
+    xhat /= nrep
+    if (mean_correction)
+        Ym = mean(Y,dims=1)
+        Y = Y .- Ym
+        xhat = xhat .- mean(xhat,dims=1) .+ Ym
+    end
+    (est=xhat,nroots=nr/nrep)
 end
 
 

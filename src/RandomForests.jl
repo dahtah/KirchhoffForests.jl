@@ -209,20 +209,39 @@ function smooth_rf_adapt(G :: SimpleGraph{T},q,y :: Vector;nrep=10,alpha=.5,step
     (est=xhat,nroots=nr/nrep)
 end
 
-function smooth(G :: SimpleGraph{T},q,y :: Vector) where T
+function smooth(G :: SimpleGraph{T},q :: Float64,y :: Vector) where T
     L=laplacian_matrix(G)
     q*((L+q*I)\y)
 end
 
-function smooth(G :: SimpleGraph{T},q,Y :: Matrix) where T
+function smooth(G :: SimpleGraph{T},q :: Vector,y :: Vector) where T
+    L=laplacian_matrix(G)
+    Q = diagm(0=>q)
+    (L+Q)\(Q*y)
+end
+
+function smooth(G :: SimpleGraph{T},q :: Float64,Y :: Matrix) where T
     L=laplacian_matrix(G)
     q*((L+q*I)\Y)
 end
 
-function smooth(G :: SimpleGraph{T},q,Y :: SparseMatrixCSC) where T
+function smooth(G :: SimpleGraph{T},q :: Vector,Y :: Matrix) where T
+    L=laplacian_matrix(G)
+    Q = diagm(0=>q)
+    (L+Q)\(Q*Y)
+end
+
+function smooth(G :: SimpleGraph{T},q :: Float64,Y :: SparseMatrixCSC) where T
     L=laplacian_matrix(G)
     C = cholesky(L+q*I)
     q*(C\Y)
+end
+
+function smooth(G :: SimpleGraph{T},q :: Vector,Y :: SparseMatrixCSC) where T
+    L=laplacian_matrix(G)
+    Q = diagm(0=>q)
+    C = cholesky(L+Q)
+    C\(Q*Y)
 end
 
 

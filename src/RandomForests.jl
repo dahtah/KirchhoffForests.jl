@@ -1,7 +1,11 @@
 module RandomForests
-using LightGraphs,LinearAlgebra,SparseArrays
+using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
 import StatsBase.denserank,Statistics.mean
 export random_forest,smooth,smooth_rf,smooth_rf_adapt
+
+struct RandomForest
+    
+end
 
 """
     random_forest(G::AbstractGraph,q)
@@ -20,12 +24,14 @@ q_varying = rand(nv(G))
 random_forest(G,q_varying)
 '''
 
+# Warning
+The value of next[i] for i root is set to 0, because roots do not have a successor. 
 """
 function random_forest(G::AbstractGraph,q::AbstractFloat)
     roots = Set{Int64}()
     root = zeros(Int64,nv(G))
     nroots = Int(0)
-    
+
     n = nv(G)
     in_tree = falses(n)
     next = zeros(Int64,n)
@@ -38,6 +44,7 @@ function random_forest(G::AbstractGraph,q::AbstractFloat)
                 push!(roots,u)
                 nroots+=1
                 root[u] = u
+                next[u] = 0
             else
                 next[u] = random_successor(G,u)
                 u = next[u]
@@ -74,12 +81,14 @@ function random_forest(G::AbstractGraph,q::AbstractVector)
                 push!(roots,u)
                 nroots+=1
                 root[u] = u
+                next[u] = 0
             else
                 next[u] = random_successor(G,u)
                 u = next[u]
             end
         end
         r = root[u]
+
         #Retrace steps, erasing loops
         u = i
         while !in_tree[u]
@@ -112,6 +121,21 @@ end
 function random_successor(G::SimpleGraph{T},i :: T) where T <: Int
     nbrs = neighbors(G, i)
     rand(nbrs)
+end
+
+function random_successor(g :: SimpleWeightedGraph,i :: T) where T <: Int
+    W = weights(g)
+    rn = W.colptr[i]:(W.colptr[i+1]-1)
+    w = W.nzval[rn]
+    w /= sum(w)
+    u = rand()
+    j = 0
+    s = 0
+    while s < u && j < length(w)
+        s+= w[j+1]
+        j+=1
+    end
+    W.rowval[rn[1]+j-1]
 end
 
 

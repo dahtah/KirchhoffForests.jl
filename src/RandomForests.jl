@@ -1,7 +1,9 @@
 module RandomForests
 using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
-import StatsBase.denserank,Statistics.mean,Base.show,LightGraphs.SimpleDiGraph
-export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,SimpleDiGraph
+import StatsBase.denserank,Statistics.mean,Base.show
+import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.outneighbors
+export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
+    SimpleDiGraph,nroots,next
 
 struct RandomForest
     next :: Array{Int}
@@ -11,10 +13,35 @@ struct RandomForest
 end
 
 function show(io::IO, rf::RandomForest)
-    println(io, "Random forest. Size of original graph $(length(rf.next)).")
-    println(io,"Number of trees $(rf.nroots)")
+    println(io, "Random forest. Size of original graph $(nv(rf)).")
+    println(io,"Number of trees $(nroots(rf))")
 end
 
+function nv(rf::RandomForest)
+    length(rf.next)
+end
+
+function nroots(rf::RandomForest)
+    rf.nroots
+end
+
+function ne(rf::RandomForest)
+    nv(rf)-nroots(rf)
+end
+
+"""
+    next(rf::RandomForest)
+
+Return a vector of indices v, where v[i] = j means that node i points to node j
+in the forest. If v[i] = 0 i is a root. 
+"""
+function next(rf::RandomForest)
+    rf.next
+end
+
+function outneighbors(rf::RandomForest,i)
+    rf.next[i] > 0 ? [rf.next[i]] : Array{Int64,1}()
+end
 
 """
     random_forest(G::AbstractGraph,q)
@@ -25,16 +52,16 @@ degree d[i]. If q is a vector, it equals q[i]/(q[i]+d[i]).
 
 # Example
 
-'''
+```
 using LightGraphs
 G = grid([3,3])
 random_forest(G,.4)
 q_varying = rand(nv(G))
-random_forest(G,q_varying)
-'''
+rf = random_forest(G,q_varying)
+nroots(rf)
+next(rf) #who points to whom in the forest
+````
 
-# Warning
-The value of next[i] for i root is set to 0, because roots do not have a successor. 
 """
 function random_forest(G::AbstractGraph,q::AbstractFloat)
     roots = Set{Int64}()
@@ -147,6 +174,21 @@ function random_successor(g :: SimpleWeightedGraph,i :: T) where T <: Int
     W.rowval[rn[1]+j-1]
 end
 
+"""
+    SimpleDiGraph(rf :: RandomForest)
+
+Convert a RandomForest rf to a SimpleDiGraph. 
+
+# Example
+
+```
+g = grid([3,3])
+rf = random_forest(g,.4)
+f = SimpleDiGraph(rf)
+connected_components(f)
+```
+
+"""
 function SimpleDiGraph(rf :: RandomForest)
     n = length(rf.next)
     ff = SimpleDiGraph(n)
@@ -156,6 +198,11 @@ function SimpleDiGraph(rf :: RandomForest)
     ff
 end
 
+
+function laplacian_matrix(g :: SimpleWeightedGraph)
+    W = weights(g)
+    Diagonal(sum(W,dims=1)[:]) - W 
+end
 
 # function smooth_rf(G :: SimpleGraph{T},q,y :: Vector;nrep=10,variant=1) where T
 #     xhat = zeros(Float64,length(y));
@@ -174,34 +221,34 @@ end
 
 
 
-function sum_by(v :: Array{T,1}, g :: Array{Int64,1}) where T
-    cc = spzeros(Int64,length(v))
-    vv = spzeros(Float64,length(v))
-    for i in 1:length(v)
-        vv[g[i]] += v[i]
-        cc[g[i]] += 1
-    end
-    nz = findnz(vv)
-    for i in nz[1]
-        vv[i] /= cc[i]
-    end
-    vv
-end
+# function sum_by(v :: Array{T,1}, g :: Array{Int64,1}) where T
+#     cc = spzeros(Int64,length(v))
+#     vv = spzeros(Float64,length(v))
+#     for i in 1:length(v)
+#         vv[g[i]] += v[i]
+#         cc[g[i]] += 1
+#     end
+#     nz = findnz(vv)
+#     for i in nz[1]
+#         vv[i] /= cc[i]
+#     end
+#     vv
+# end
 
-function sum_by(v :: Array{T,2}, g :: Array{Int64,1}) where T
-    cc = spzeros(Int64,length(v))
-    vv = spzeros(Float64,size(v,1),size(v,2))
-    for i in 1:size(v,1)
-#        @show size(vv[g[i],:]),size(v[i,:])
-        vv[g[i],:] += v[i,:]
-        cc[g[i]] += 1
-    end
-    nz = findnz(cc)
-    for i in nz[1]
-        vv[i,:] /= cc[i]
-    end
-    vv
-end
+# function sum_by(v :: Array{T,2}, g :: Array{Int64,1}) where T
+#     cc = spzeros(Int64,length(v))
+#     vv = spzeros(Float64,size(v,1),size(v,2))
+#     for i in 1:size(v,1)
+# #        @show size(vv[g[i],:]),size(v[i,:])
+#         vv[g[i],:] += v[i,:]
+#         cc[g[i]] += 1
+#     end
+#     nz = findnz(cc)
+#     for i in nz[1]
+#         vv[i,:] /= cc[i]
+#     end
+#     vv
+# end
 
 
 

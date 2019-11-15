@@ -1,7 +1,26 @@
-* ICASSP
+* TODO Tidying up
 
-- Do a few semi-supervised learning examples 
-- Do a few graph denoising examples
+- Write basic tests
+  - [X] Correctness in weighted/unweighted cases
+  - [ ] Smoothing
+  - [ ] 
+- [ ] Write package doc
+- [X] Add type for random_forest result
+
+* TODO Moment estimators
+
+- Include basic moment estimators (first order and above)
+
+* TODO Weighted graphs
+
+- Should test in a few instances, maybe weighted diffusion on images
+- Current implementation of random_successor has cost O(d_i), which is bad.
+  Should try to reduce it. Pre-processing can achieve a cost reduction: we need
+  to go through every node and either (a) build a binary search tree to sample
+  in O(log d_i) or (b) use Walker's alias method to sample in O(1). This means a
+  cost of O(nd) upfront.  
+
+
 
 * Medium term
 

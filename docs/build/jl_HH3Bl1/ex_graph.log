@@ -1,7 +1,7 @@
-This is LuaTeX, Version 1.0.4 (TeX Live 2017/Debian)  (format=lualatex 2019.1.9)  15 NOV 2019 15:58
+This is LuaTeX, Version 1.0.4 (TeX Live 2017/Debian)  (format=lualatex 2019.1.9)  18 NOV 2019 12:23
  system commands enabled.
-**./jl_X3XGVo/ex_graph.tex
-(./jl_X3XGVo/ex_graph.tex
+**./jl_HH3Bl1/ex_graph.tex
+(./jl_HH3Bl1/ex_graph.tex
 LaTeX2e <2017-04-15>
 Lua module: luaotfload-main 2017/01/29 2.80001 OpenType layout system.
 Lua module: lualibs 2017-02-01 2.5 ConTeXt Lua standard libraries.
@@ -34,7 +34,7 @@ Inserting `luaotfload.aux.set_capheight' at position 3 in `luaotfload.patch_font
 '.
 Inserting `luaotfload.rewrite_fontname' at position 4 in `luaotfload.patch_font'
 .
-luaotfload | main : initialization completed in 0.085 seconds
+luaotfload | main : initialization completed in 0.083 seconds
 Babel <3.18> and hyphenation patterns for 1 language(s) loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/standalone/standalone.cls
 Document Class: standalone 2015/07/15 v1.2 Class to compile TeX sub-files standa
@@ -1013,6 +1013,6 @@ Here is how much of LuaTeX's memory you used:
 attribute_list, 2 if_stack, 1 write, 112 pdf_literal, 5 pdf_colorstack nodes
    avail lists: 1:9,2:3,3:1,5:14,6:1,7:2,8:1,12:1
  27636 multiletter control sequences out of 65536+600000
- 27 fonts using 7218055 bytes
+ 27 fonts using 7218039 bytes
  62i,10n,67p,425b,1002s stack positions out of 5000i,500n,10000p,200000b,100000s
 !  ==> Fatal error occurred, no output PDF file produced!

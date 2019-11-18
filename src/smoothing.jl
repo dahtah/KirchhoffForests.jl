@@ -1,4 +1,38 @@
-#average the signals in Y over a partition 
+struct Partition
+    part :: Array{Int,1}
+    nparts :: Int
+end
+
+function Partition(rf :: RandomForest )
+    Partition(Int.(denserank(rf.root)),rf.nroots)
+end
+
+function nv(p::Partition)
+    length(p.part)
+end
+
+function show(io::IO, p::Partition)
+    println(io, "Graph partition. Size of original graph $(nv(p)).")
+    println(io,"Number of parts $(p.nparts)")
+end
+
+function laplacian_matrix(g :: SimpleWeightedGraph)
+    W = weights(g)
+    s = sum(W,dims=1)
+    D = spdiagm(0 => s[:])
+    D - W 
+end
+
+function laplacian_matrix(g :: SimpleGraph)
+    A = adjacency_matrix(g)
+    s = degree(g)
+    D = spdiagm(0 => s[:])
+    return D - A
+end
+
+
+
+#average the signals in Y over a partition
 function avg_rf(roots,Y)
     n = length(roots)
     m = size(Y,2)
@@ -28,40 +62,65 @@ end
 
 
 
-function smooth(G :: SimpleGraph{T},q,Y ) where T
+function smooth(G :: AbstractGraph{T},q,Y ) where T
     L=laplacian_matrix(G)
     q*((L+q*I)\Y)
 end
 
-function smooth(G :: SimpleGraph{T},q :: Vector,Y ) where T
-    L=laplacian_matrix(G)
+@doc raw"""
+   smooth(g :: AbstractGraph{T},q,Y )
+
+Smooth signal over graph. Given a vector ``\mathbf{y}`` of size nv(g), compute
+``q(q\mathbf{I}+\mathbf{L})^{-1}\mathbf{y}``, where ``\mathbf{L}`` is the graph
+Laplacian and q > 0 is a regularisation coefficient (the smaller q, the stronger
+the smoothing).
+
+If Y is a matrix then this function computes
+``q(q\mathbf{I}+\mathbf{L})^{-1}\mathbf{Y}``. The linear system is solved using
+a direct method.
+
+# Example
+
+```
+g = grid([10])
+t = LinRange(0,1,10)
+y = sin.(6*pi*t)
+smooth(g,.1,y)
+smooth(g,10.1,y)
+```
+
+"""
+function smooth(g :: AbstractGraph{T},q :: Vector,Y ) where T
+    L=laplacian_matrix(g)
     Q = diagm(0=>q)
     (L+Q)\(Q*Y)
 end
 
-function smooth(G :: SimpleGraph{T},q :: Float64,Y :: SparseMatrixCSC) where T
-    L=laplacian_matrix(G)
+function smooth(g :: AbstractGraph{T},q :: Float64,Y :: SparseMatrixCSC) where T
+    L=laplacian_matrix(g)
     C = cholesky(L+q*I)
     q*(C\Y)
 end
 
-function smooth(G :: SimpleGraph{T},q :: Vector,Y :: SparseMatrixCSC) where T
-    L=laplacian_matrix(G)
+function smooth(g :: AbstractGraph{T},q :: Vector,Y :: SparseMatrixCSC) where T
+    L=laplacian_matrix(g)
     Q = diagm(0=>q)
     C = cholesky(L+Q)
     C\(Q*Y)
 end
-function smooth_rf(G :: AbstractGraph,q,Y;nrep=10,variant=1,mean_correction=false) 
+
+function smooth_rf(g :: AbstractGraph,q,Y;nrep=10,variant=1,mean_correction=false)
     xhat = zeros(size(Y));
     nr = 0;
     Ym = 0;
     for indr in Base.OneTo(nrep)
-        rf = random_forest(G,q)
+        rf = random_forest(g,q)
         nr += rf.nroots
         if variant==1
-            xhat += Y[rf.root,:]
+            xhat += rf*Y
+#            xhat += Y[rf.root,:]
         elseif variant==2
-            xhat += avg_rf(rf.root,Y)
+            xhat += Partition(rf)*Y
         end
     end
     xhat /= nrep
@@ -72,6 +131,79 @@ function smooth_rf(G :: AbstractGraph,q,Y;nrep=10,variant=1,mean_correction=fals
     end
     (est=xhat,nroots=nr/nrep)
 end
+
+
+"""
+*(rf::RandomForest,Y :: Matrix)
+
+Treating the random forest as a linear operator, propagate the value of y at
+the root to the rest of the tree.
+
+# Example
+
+```
+g = grid([5])
+rf = random_forest(g,.5)
+rf*collect(1:nv(g))
+```
+
+"""
+function Base.:*(rf::RandomForest, Y::Matrix) 
+    Y[rf.root,:]
+end
+
+function Base.:*(rf::RandomForest, Y::Vector) 
+    Y[rf.root]
+end
+
+
+"""
+*(p::Partition,Y :: Matrix)
+
+Treating the graph partition as a linear operator, compute the average of Y
+over the partition. 
+
+# Example
+
+```
+g = grid([5])
+rf = random_forest(g,.5)
+p = Partition(rf)
+p*collect(1:nv(g))
+```
+
+"""
+function Base.:*(p::Partition,Y :: Matrix)
+    n = length(p.part)
+    m = size(Y,2)
+
+    Z = zeros(p.nparts,m)
+    ns = zeros(Int,p.nparts)
+    #Step 1: compute average of Y in each subset
+    @inbounds for i = 1:n
+        r = p.part[i]
+        nc = ns[r]+1
+        @inbounds for j = 1:m
+            Z[r,j] *= ((nc-1)/nc)
+            Z[r,j] += Y[i,j]/nc
+        end
+        ns[r] = nc
+    end
+    #Step 2: assign average to each index according to partition
+    X = Matrix{Float64}(undef,n,m)
+    @inbounds for i = 1:n
+        r = p.part[i]
+        @inbounds for j=1:m
+            X[i,j] = Z[r,j]
+        end
+    end
+    X
+end
+
+function Base.:*(p::Partition,y :: Vector)
+    p*reshape(y,:,1)
+end
+
 
 
 

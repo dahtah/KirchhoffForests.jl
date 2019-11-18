@@ -2,8 +2,7 @@
 
 - Write basic tests
   - [X] Correctness in weighted/unweighted cases
-  - [ ] Smoothing
-  - [ ] 
+  - [X] Smoothing
 - [ ] Write package doc
 - [X] Add type for random_forest result
 

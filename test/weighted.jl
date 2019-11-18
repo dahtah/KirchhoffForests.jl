@@ -1,4 +1,4 @@
-@testset "basic" begin
+@testset "weighted" begin
     import Random.seed!
     using SparseArrays
     seed!(1)

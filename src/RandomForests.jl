@@ -3,7 +3,7 @@ using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
 import StatsBase.denserank,Statistics.mean,Base.show
 import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.outneighbors
 export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
-    SimpleDiGraph,nroots,next
+    SimpleDiGraph,nroots,next,Partition
 
 struct RandomForest
     next :: Array{Int}
@@ -198,11 +198,7 @@ function SimpleDiGraph(rf :: RandomForest)
     ff
 end
 
-
-function laplacian_matrix(g :: SimpleWeightedGraph)
-    W = weights(g)
-    Diagonal(sum(W,dims=1)[:]) - W 
-end
+include("smoothing.jl")
 
 # function smooth_rf(G :: SimpleGraph{T},q,y :: Vector;nrep=10,variant=1) where T
 #     xhat = zeros(Float64,length(y));

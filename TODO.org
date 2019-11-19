@@ -19,7 +19,14 @@
   in O(log d_i) or (b) use Walker's alias method to sample in O(1). This means a
   cost of O(nd) upfront.  
 
+* Partition
 
+- The current implementation of the partition structure is inefficient and
+  should be upgraded to something better. The main challenge is that one gets a
+  vector of root indices, e.g., [5 2 2 4 5] and we need to implement the
+  following operations (a) average over groups (b) propagate averages and (c)
+  (future work) compute overlap between partitions for Rao-Blackwellised moment
+  estimators.
 
 * Medium term
 

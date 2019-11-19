@@ -1,10 +1,16 @@
+#Partition, as implemented here, is not efficient!
+#Should update
+
 struct Partition
     part :: Array{Int,1}
     nparts :: Int
+    sizep :: Array{Int,1}
 end
 
 function Partition(rf :: RandomForest )
-    Partition(Int.(denserank(rf.root)),rf.nroots)
+    part=Int.(denserank(rf.root))
+    sizep = counts(part)
+    Partition(part,rf.nroots,sizep)
 end
 
 function nv(p::Partition)
@@ -174,6 +180,35 @@ p*collect(1:nv(g))
 
 """
 function Base.:*(p::Partition,Y :: Matrix)
+    #Step 1: compute average of Y in each subset
+    propagate(p,average(p,Y))
+end
+
+function Base.:*(p::Partition,y :: Vector)
+    p*reshape(y,:,1) |> vec
+end
+
+function average(p::Partition,y :: Vector)
+    average(p,reshape(y,:,1)) |> vec
+end
+
+function propagate(p::Partition,Z :: Matrix)
+    m = size(Z,2)
+    X = Matrix{Float64}(undef,nv(p),m)
+    @inbounds for i = 1:nv(p)
+        r = p.part[i]
+        @inbounds for j=1:m
+            X[i,j] = Z[r,j]
+        end
+    end
+    X
+end
+
+function propagate(p::Partition,z :: Vector)
+    propagate(p,reshape(z,:,1)) |> vec
+end
+
+function average(p::Partition,Y :: Matrix)
     n = length(p.part)
     m = size(Y,2)
 
@@ -189,21 +224,8 @@ function Base.:*(p::Partition,Y :: Matrix)
         end
         ns[r] = nc
     end
-    #Step 2: assign average to each index according to partition
-    X = Matrix{Float64}(undef,n,m)
-    @inbounds for i = 1:n
-        r = p.part[i]
-        @inbounds for j=1:m
-            X[i,j] = Z[r,j]
-        end
-    end
-    X
+    Z
 end
-
-function Base.:*(p::Partition,y :: Vector)
-    p*reshape(y,:,1)
-end
-
 
 
 

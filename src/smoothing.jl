@@ -188,6 +188,11 @@ function Base.:*(p::Partition,y :: Vector)
     p*reshape(y,:,1) |> vec
 end
 
+function average(p::Partition,y :: Real)
+    repeat([y],p.nparts)
+end
+
+
 function average(p::Partition,y :: Vector)
     average(p,reshape(y,:,1)) |> vec
 end

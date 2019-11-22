@@ -40,6 +40,58 @@ function smooth_ms_min(g :: SimpleGraph,p :: Partition,q,y)
     # y_lowfreq
 end
 
+function multigrid_solve(mg ,x,y,q;α=.1,nsteps=10)
+    cycle = (x) -> multigrid_step(mg,x,y,q;α=α)
+    for i in 1:nsteps
+        x = cycle(x)
+    end
+    x
+end
+
+function multigrid_step(mg ,x0,y,q;α=.1,size_exact=5)
+#    A = (1/q)*(q*I+laplacian_matrix(L))
+    g = mg[1][1]
+    p = mg[1][2]
+    
+    L = laplacian_matrix(g)
+    gr = Vector(L*x0 .+ q.*(x0 .- y))
+    @assert length(gr)==nv(g)
+    println("Blah blah")
+    if (nv(g) <= size_exact)
+        println("Exact solve")
+        return vec(smooth(g,q,y))
+    else
+        println( "Smoothing")
+        #Apply smoother
+        x = Vector(x0 .- α*(gr)./diag(L))
+        
+        #    @show L*x,q.*(x-y)
+        println("Computing gradient")
+        gr2 = Vector(L*x .+ q.*(x-y))
+#        @show size(gr2),nv(g)
+        if (length(mg)>1)
+            # @show average(p,gr2) 
+            smooth_res = vec(average(p,gr2))
+            qnew = vec(average(p,q)).*p.sizep
+            # @show qnew
+            corrected_res = multigrid_step(mg[2:end],zeros(p.nparts),smooth_res,qnew;α=α)
+           # @show corrected_res
+            @assert size(x)==size(propagate(p,corrected_res))
+            #@show x,propagate(p,corrected_res)
+            x-= propagate(p,corrected_res)
+        end
+        return x
+    end
+end
+
+function grid_partition(n)
+    Partition(repeat(1:(n ÷ 2),inner=2),n ÷ 2,2*ones(Int,n ÷ 2))
+end
+
+function mgrid_hierarchy_1d(n,depth)
+    ns = n .÷ (2 .^(0:(depth - 1)))
+     [(grid([i]),grid_partition(i)) for i in ns ]
+end
 
 function smooth_ms(g :: SimpleGraph,p :: Partition,q,y)
     gred = reduced_graph(g,p)

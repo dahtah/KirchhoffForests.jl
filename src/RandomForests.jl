@@ -1,7 +1,9 @@
 module RandomForests
 using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
-import StatsBase.denserank,Statistics.mean,Base.show,StatsBase.counts
+import StatsBase.denserank,Statistics.mean,Base.show,Base.sum,
+StatsBase.counts
 import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.outneighbors
+
 export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
     SimpleDiGraph,nroots,next,Partition
 export reduced_graph,smooth_ms
@@ -69,7 +71,7 @@ function random_forest(G::AbstractGraph,q::AbstractFloat)
     roots = Set{Int64}()
     root = zeros(Int64,nv(G))
     nroots = Int(0)
-
+    d = degree(G)
     n = nv(G)
     in_tree = falses(n)
     next = zeros(Int64,n)
@@ -77,7 +79,7 @@ function random_forest(G::AbstractGraph,q::AbstractFloat)
         u = i
         
         while !in_tree[u]
-            if (rand() < q/(q+degree(G,u)))
+            if (((q+d[u]))*rand() < q)
                 in_tree[u] = true
                 push!(roots,u)
                 nroots+=1

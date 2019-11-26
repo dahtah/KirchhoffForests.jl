@@ -28,6 +28,11 @@
   (future work) compute overlap between partitions for Rao-Blackwellised moment
   estimators.
 
+* Micro-optimisations
+
+- In random_forest, q/(q+d[i]) is computed at each visit, but need only be
+  computed once
+
 * Medium term
 
 - Generalise implementation of Wilson's alg. to weighted graphs, in an efficient

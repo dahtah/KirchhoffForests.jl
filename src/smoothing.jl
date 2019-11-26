@@ -1,6 +1,8 @@
 #Partition, as implemented here, is not efficient!
 #Should update
 
+
+
 struct Partition
     part :: Array{Int,1}
     nparts :: Int
@@ -209,6 +211,14 @@ function propagate(p::Partition,Z :: Matrix)
     X
 end
 
+
+function grad_descent(g::SimpleWeightedGraph,y,x0,q;α=.1)
+    L = laplacian_matrix(g)
+    gr = L*x0 .+ q.*(x0 .- y)
+    x = Vector(x0 .- α*(gr)./diag(L))
+    (x = x,res= Vector(x .- y + L*x ./ q) )
+end
+
 function propagate(p::Partition,z :: Vector)
     propagate(p,reshape(z,:,1)) |> vec
 end
@@ -232,73 +242,21 @@ function average(p::Partition,Y :: Matrix)
     Z
 end
 
+#sum Y in each subset
+function sum(p::Partition,Y :: Matrix)
+    n = length(p.part)
+    m = size(Y,2)
 
+    Z = zeros(p.nparts,m)
+    @inbounds for i = 1:n
+        r = p.part[i]
+        @inbounds for j = 1:m
+            Z[r,j] += Y[i,j]
+        end
+    end
+    Z
+end
 
-# function smooth_rf_pcg(G :: SimpleGraph{T},q,y :: Vector;nrep=10,alpha=.5,step="fixed",nsteps=10) where T
-#     nr = 0;
-#     rf = [random_forest(G,q) for _ in 1:nrep]
-#     xt = y
-#     L = laplacian_matrix(G)
-#     cfun = (x) -> (q/2)*sum((x .- y).^2) + .5*x'*L*x
-#     gamma =alpha
-#     for indr in 1:nsteps
-#         gr = q*xt + L*xt - q*y
-#         dir = mean([avg_rf(r.root,gr) for r in rf])
-#         #dir = (q*U)
-#         if (step == "optimal")
-#             u = A*dir
-#             gamma = ( sum(xhat .* (A*u)) - dot(y,u)   )/dot(u,u)
-#             @show gamma
-#         elseif (step=="backtrack")
-#             curr = cfun(xt)
-#             gamma = alpha
-# #            while (norm(A*(xhat-gamma*dir) - y) > curr)
-#             while (cfun(xt-gamma*dir) > curr)
-#                 gamma = gamma/2
-#             end
-#             @show gamma
-#         end
-#         xt -= gamma*dir
-#         @show cfun(xt)
-#     end
-#     (est=xt,cost = cfun(xt))
-# end
-
-
-# function smooth_rf_adapt(G :: SimpleGraph{T},q,y :: Vector;nrep=10,alpha=.5,step="fixed") where T
-#     nr = 0;
-#     rf = random_forest(G,q)
-#     xhat = avg_rf(rf.root,y)
-# #    @show xhat
-#     L = laplacian_matrix(G)
-#     cfun = (x) -> (q/2)*sum((x .- y).^2) + .5*x'*L*x
-#     A = (L+q*I)/q
-#     res = A*xhat - y
-#     gamma =alpha
-# #    @show res
-
-#     for indr in 2:nrep
-#         rf = random_forest(G,q)
-#         dir = avg_rf(rf.root,res)
-#         if (step == "optimal")
-#             u = A*dir
-#             gamma = ( sum(xhat .* (A*u)) - dot(y,u)   )/dot(u,u)
-#             @show gamma
-#         elseif (step=="backtrack")
-#             curr = cfun(xhat)
-#             gamma = alpha
-# #            while (norm(A*(xhat-gamma*dir) - y) > curr)
-#             while (cfun(xhat-gamma*dir) > curr)
-#                 gamma = gamma/2
-#             end
-#             @show gamma
-#         end
-
-#         xhat -= gamma*dir
-#         res = A*xhat - y
-#         @show cfun(xhat)
-#         nr += rf.nroots
-#     end
-#     (est=xhat,nroots=nr/nrep)
-# end
-
+function sum(p::Partition,y :: Vector)
+    sum(p,reshape(y,:,1)) |> vec
+end

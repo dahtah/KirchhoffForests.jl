@@ -4,10 +4,17 @@ import StatsBase.denserank,Statistics.mean,Base.show,Base.sum,
 StatsBase.counts
 import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.outneighbors
 
-export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
-    SimpleDiGraph,nroots,next,Partition
+include("./alias.jl")
+using .alias
+
+export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,  
+      SimpleDiGraph,nroots,next,Partition
+export PreprocessedWeightedGraph
 export reduced_graph,smooth_ms
 export self_roots
+
+
+
 
 struct RandomForest
     next :: Array{Int}
@@ -15,6 +22,17 @@ struct RandomForest
     nroots :: Int
     root :: Array{Int,1}
 end
+
+struct PreprocessedWeightedGraph
+    g :: SimpleWeightedGraph
+    K :: Matrix{Int32}
+    U :: Matrix{Float64}
+    function PreprocessedWeightedGraph(g)
+	   K,U = alias_preprocess(g)
+	   new(g,K,U)
+    end
+end
+
 
 function show(io::IO, rf::RandomForest)
     println(io, "Random forest. Size of original graph $(nv(rf)).")
@@ -140,6 +158,41 @@ function random_forest(G::AbstractGraph,q::AbstractVector)
     (next=next,roots=roots,nroots=nroots,root=root)
 end
 
+function random_forest(G::PreprocessedWeightedGraph,q::AbstractFloat)
+    roots = Set{Int64}()
+    root = zeros(Int64,nv(G.g))
+    nroots = Int(0)
+    d = degree(G.g)
+    n = nv(G.g)
+    in_tree = falses(n)
+    next = zeros(Int64,n)
+    @inbounds for i in 1:n
+        u = i
+        
+        while !in_tree[u]
+            if (((q+d[u]))*rand() < q)
+                in_tree[u] = true
+                push!(roots,u)
+                nroots+=1
+                root[u] = u
+                next[u] = 0
+            else
+                next[u] = random_successor(G,u)
+                u = next[u]
+            end
+        end
+        r = root[u]
+        #Retrace steps, erasing loops
+        u = i
+        while !in_tree[u]
+            root[u] = r
+            in_tree[u] = true
+            u = next[u]
+        end
+    end
+    RandomForest(next,roots,nroots,root)
+end
+
 
 
 function avg_rf(root :: Array{Int64,1},y :: Array{Float64,1})
@@ -177,6 +230,15 @@ function random_successor(g :: SimpleWeightedGraph,i :: T) where T <: Int
     end
     W.rowval[rn[1]+j-1]
 end
+
+function random_successor(g :: PreprocessedWeightedGraph,i :: T) where T <: Int
+
+    sample = alias_draw(g.K[i,:],g.U[i,:])
+    sample
+end
+
+
+
 
 """
     SimpleDiGraph(rf :: RandomForest)

@@ -112,7 +112,7 @@ function random_forest(G::AbstractGraph,q::AbstractFloat)
                 root[u] = u
                 next[u] = 0
             else
-                next[u] = random_successor(G,u)
+                @time next[u] = random_successor(G,u)
                 u = next[u]
             end
         end

@@ -3,7 +3,7 @@ using Test
 using LinearAlgebra
 
 #test that the result of random_forest is correct
-#ie. it should be a spanning forest, oriented towards the roots 
+#ie. it should be a spanning forest, oriented towards the roots
 function check_correctness(rf)
     F = SimpleDiGraph(rf)
     roots =collect(rf.roots)

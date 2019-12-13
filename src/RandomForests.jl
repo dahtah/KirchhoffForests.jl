@@ -34,6 +34,7 @@ function PreprocessedWeightedGraph(adjmx::SparseMatrixCSC{U,T}) where T <: Integ
     K,P = alias_preprocess(SimpleWeightedGraph(adjmx))
     PreprocessedWeightedGraph{T, U}(adjmx,K,P)
 end
+PreprocessedWeightedGraph(g::SimpleGraph)= PreprocessedWeightedGraph(g.weights)
 PreprocessedWeightedGraph(g::SimpleWeightedGraph)= PreprocessedWeightedGraph(g.weights)
 inneighbors(g::PreprocessedWeightedGraph, v::Integer) = g.weights[v,:].nzind
 is_directed(::Type{PreprocessedWeightedGraph}) = false

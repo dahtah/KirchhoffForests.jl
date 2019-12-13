@@ -41,6 +41,7 @@ is_directed(::Type{PreprocessedWeightedGraph}) = false
 is_directed(::Type{PreprocessedWeightedGraph{T, U}}) where T where U = false
 is_directed(g::PreprocessedWeightedGraph) = false
 ne(g::PreprocessedWeightedGraph) = nnz(g.weights)/2
+degree(g::PreprocessedWeightedGraph) = sum(g.weights,dims=1)
 
 
 function show(io::IO, rf::RandomForest)

@@ -1,6 +1,6 @@
 
 using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
-
+using RandomForests
 
 export alias_preprocess
 export alias_draw
@@ -13,8 +13,8 @@ function alias_preprocess(g :: SimpleWeightedGraph)
 """
     W = Matrix(weights(g))
     n = size(g)[1]
-    K = zeros(Int32,n,n)
-    U = zeros(Float64,n,n)
+    K = spzeros(Int64,n,n)
+    U = spzeros(Float64,n,n)
 
     for k = 1: n
         probs = W[k,:]
@@ -58,17 +58,16 @@ function alias_preprocess(g :: SimpleWeightedGraph)
     end
     K,U
 end
-function alias_draw(K,U)
+function alias_draw(g,i)
     """
     Drawing procedure of alias method after the preprocessing
     Its cost is constant!
     """
-    n = size(K,1)
-    v = Int32(floor(n*rand())+1)
-    if(rand() < U[v])
+    v = rand(1:size(g.P,1))
+    if(rand() < g.P[i,v])
         sample = v
     else
-        sample = K[v]
+        sample = g.K[i,v]
     end
-    sample
+    Int64(sample)
 end

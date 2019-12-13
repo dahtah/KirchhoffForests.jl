@@ -3,18 +3,17 @@ using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
 import StatsBase.denserank,Statistics.mean,Base.show,Base.sum,
 StatsBase.counts
 import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.degree,LightGraphs.outneighbors
-
+import SimpleWeightedGraphs.AbstractSimpleWeightedGraph
 import LightGraphs:
-nv,ne,outneighbors,AbstractSimpleWeightedGraph,is_directed,inneighbors
+nv,ne,outneighbors,is_directed,inneighbors
 
 include("./alias.jl")
-# using .alias
 
 export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
       SimpleDiGraph,nroots,next,Partition,PreprocessedWeightedGraph
 export reduced_graph,smooth_ms
 export self_roots
-
+export random_successor
 
 struct RandomForest
     next :: Array{Int}
@@ -26,21 +25,22 @@ end
 # abstract type AbstractSimpleWeightedGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
 struct PreprocessedWeightedGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
     weights::SparseMatrixCSC{U, T}
-    K :: SparseMatrixCSC{T}
-    P :: SparseMatrixCSC{U}
+    K :: SparseMatrixCSC{Int64,Int64}
+    P :: SparseMatrixCSC{Float64,Int64}
 end
 
 function PreprocessedWeightedGraph(adjmx::SparseMatrixCSC{U,T}) where T <: Integer where U <: Real
     K,P = alias_preprocess(SimpleWeightedGraph(adjmx))
     PreprocessedWeightedGraph{T, U}(adjmx,K,P)
 end
-PreprocessedWeightedGraph(g::SimpleGraph)= PreprocessedWeightedGraph(g.weights)
+PreprocessedWeightedGraph(g::LightGraphs.SimpleGraphs.SimpleGraph{T}, ::Type{U}=Float64) where T <: Integer where U <: Real =
+    PreprocessedWeightedGraph(adjacency_matrix(g, U))
 PreprocessedWeightedGraph(g::SimpleWeightedGraph)= PreprocessedWeightedGraph(g.weights)
 inneighbors(g::PreprocessedWeightedGraph, v::Integer) = g.weights[v,:].nzind
 is_directed(::Type{PreprocessedWeightedGraph}) = false
 is_directed(::Type{PreprocessedWeightedGraph{T, U}}) where T where U = false
 is_directed(g::PreprocessedWeightedGraph) = false
-ne(g::PreprocessedWeightedGraph) = nnz(g.weights)
+ne(g::PreprocessedWeightedGraph) = nnz(g.weights)/2
 
 
 function show(io::IO, rf::RandomForest)
@@ -103,7 +103,7 @@ function random_forest(G::AbstractGraph,q::AbstractFloat)
     in_tree = falses(n)
     next = zeros(Int64,n)
     @inbounds for i in 1:n
-        u = i
+        u = Int64(i)
         while !in_tree[u]
             if (((q+d[u]))*rand() < q)
                 in_tree[u] = true
@@ -112,7 +112,7 @@ function random_forest(G::AbstractGraph,q::AbstractFloat)
                 root[u] = u
                 next[u] = 0
             else
-                next[u] = random_successor(G,Int(u))
+                next[u] = random_successor(G,u)
                 u = next[u]
             end
         end
@@ -182,12 +182,12 @@ function sure(y,xhat,nroots,s2)
     -length(y)*s2+err+2*s2*nroots
 end
 
-function random_successor(G::SimpleGraph{T},i :: T) where T <: Int
+function random_successor(G::SimpleGraph{Int},i :: T) where T <: Int64
     nbrs = neighbors(G, i)
     rand(nbrs)
 end
 
-function random_successor(g :: SimpleWeightedGraph,i :: T) where T <: Int
+function random_successor(g :: SimpleWeightedGraph,i :: T) where T <: Int64
     W = weights(g)
     rn = W.colptr[i]:(W.colptr[i+1]-1)
     w = W.nzval[rn]
@@ -203,8 +203,8 @@ function random_successor(g :: SimpleWeightedGraph,i :: T) where T <: Int
 end
 
 
-function random_successor(g :: PreprocessedWeightedGraph{T,U},i :: T) where T <: Signed where U<:Real
-    sample = alias_draw(g.K[i,:],g.P[i,:])
+function random_successor(g :: PreprocessedWeightedGraph,i :: T) where T <: Int64
+    sample = alias_draw(g,i)
     sample
 end
 

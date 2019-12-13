@@ -7,7 +7,7 @@
     @assert (ys/maximum(ys)) ≈ y #should be eigenvector
     ysw = smooth(SimpleWeightedGraph(g),.1,y)
     @assert ysw ≈ ys
-    yspw = smooth(PreprocessedWeightedGraph(SimpleWeightedGraph(g)),.1,y)
+    yspw = smooth(PreprocessedWeightedGraph(g),.1,y)
     @assert yspw ≈ ys
 
     #Test propagation

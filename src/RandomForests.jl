@@ -187,6 +187,7 @@ end
 function random_successor(G::SimpleGraph{Int},i :: T) where T <: Int64
     nbrs = neighbors(G, i)
     rand(nbrs)
+
 end
 
 function random_successor(g :: SimpleWeightedGraph,i :: T) where T <: Int64

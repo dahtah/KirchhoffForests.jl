@@ -64,10 +64,10 @@ function alias_draw(g,i)
     Its cost is constant!
     """
     v = rand(1:size(g.P,1))
-    if(rand() < g.P[v,i])
+    if(rand() < g.P[i,v])
         sample = v
     else
-        sample = g.K[v,i]
+        sample = g.K[i,v]
     end
     Int64(sample)
 end

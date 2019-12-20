@@ -11,24 +11,24 @@ function alias_preprocess(g :: SimpleWeightedGraph)
     Overall cost for a graph is O(N^2)
     https://en.wikipedia.org/wiki/Alias_method
 """
-    W = Matrix(weights(g))
+    W = weights(g)'
     n = size(g)[1]
     K = spzeros(Int64,n,n)
     U = spzeros(Float64,n,n)
 
     for k = 1: n
-        probs = W[k,:]
-        # rn = W.colptr[k]:(W.colptr[k+1]-1)
-        # probs = W.nzval[rn]
+        rn = W.colptr[k]:(W.colptr[k+1]-1)
+        probs = W.nzval[rn]
         probs /= sum(probs)
         # Overfull and Underfull stacks
         ofull = Int64[]
         ufull = Int64[]
         # For keeping indices
 
+        push!(ufull,setdiff(1:n, W.rowval[rn]))
         # For keeping probabilities
         # Initialize indices and stacks with original probabilities
-        for i = 1 : n
+        for i = 1 : size(rn,1)
             U[k,i] = n*probs[i]
             if(U[k,i] > 1)
                 push!(ofull,i)

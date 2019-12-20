@@ -11,7 +11,7 @@ function alias_preprocess(g :: SimpleWeightedGraph)
     Overall cost for a graph is O(N^2)
     https://en.wikipedia.org/wiki/Alias_method
 """
-    W = weights(g)'
+    W = weights(g)
     n = size(g)[1]
     K = spzeros(Int64,n,n)
     U = spzeros(Float64,n,n)

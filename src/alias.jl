@@ -29,13 +29,13 @@ function alias_preprocess(g :: SimpleWeightedGraph)
         # For keeping probabilities
         # Initialize indices and stacks with original probabilities
         for i = 1 : size(rn,1)
-            U[k,i] = n*probs[i]
-            if(U[k,i] > 1)
-                push!(ofull,i)
-            elseif(U[k,i] < 1)
-                push!(ufull,i)
+            U[k,rn[i]] = n*probs[i]
+            if(U[k,rn[i]] > 1)
+                push!(ofull,rn[i])
+            elseif(U[k,rn[i]] < 1)
+                push!(ufull,rn[i])
             else
-                K[k,i] = i
+                K[k,rn[i]] = rn[i]
             end
         end
         println(U)

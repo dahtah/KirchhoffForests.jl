@@ -38,8 +38,6 @@ function alias_preprocess(g :: SimpleWeightedGraph)
                 K[k,i] = i
             end
         end
-        println(ufull)
-        println(ofull)
         # Loop until all bins are "equally full"
         while !(isempty(ofull) && isempty(ufull))
             i = pop!(ofull)

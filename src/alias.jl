@@ -28,17 +28,18 @@ function alias_preprocess(g :: SimpleWeightedGraph)
         append!(ufull,setdiff(1:n, W.rowval[rn]))
         # For keeping probabilities
         # Initialize indices and stacks with original probabilities
-        for i = 1 : size(rn,1)
-            U[k,rn[i]] = n*probs[i]
-            if(U[k,rn[i]] > 1)
-                push!(ofull,rn[i])
-            elseif(U[k,rn[i]] < 1)
-                push!(ufull,rn[i])
+        for (idx, i) in enumerate(W.rowval[rn])
+            U[k,i] = n*probs[idx]
+            if(U[k,i] > 1)
+                push!(ofull,i)
+            elseif(U[k,i] < 1)
+                push!(ufull,i)
             else
-                K[k,rn[i]] = rn[i]
+                K[k,i] = i
             end
         end
-        println(U)
+        println(ufull)
+        println(ofull)
         # Loop until all bins are "equally full"
         while !(isempty(ofull) && isempty(ufull))
             i = pop!(ofull)

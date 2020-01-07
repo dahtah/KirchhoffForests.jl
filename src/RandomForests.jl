@@ -25,8 +25,8 @@ end
 # abstract type AbstractSimpleWeightedGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
 struct PreprocessedWeightedGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
     weights::SparseMatrixCSC{U, T}
-    K :: SparseMatrixCSC{Int64,Int64}
-    P :: SparseMatrixCSC{Float64,Int64}
+    K :: Matrix{Int64}
+    P :: Matrix{Float64}
 end
 
 function PreprocessedWeightedGraph(adjmx::SparseMatrixCSC{U,T}) where T <: Integer where U <: Real
@@ -207,6 +207,7 @@ end
 
 
 function random_successor(g :: PreprocessedWeightedGraph,i :: T) where T <: Int64
+
     sample = alias_draw(g,i)
     sample
 end

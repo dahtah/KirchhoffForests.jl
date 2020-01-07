@@ -13,30 +13,33 @@ function alias_preprocess(g :: SimpleWeightedGraph)
 """
     W = weights(g)
     n = size(g)[1]
-    K = spzeros(Int64,n,n)
-    U = spzeros(Float64,n,n)
-
+    dmax = maximum(sum(W.>0,dims=1))
+    K = zeros(Int64,n,dmax)
+    U = zeros(Float64,n,dmax)
     for k = 1: n
-        rn = W.colptr[k]:(W.colptr[k+1]-1)
-        probs = W.nzval[rn]
+        probs = zeros(Float64,dmax)
+        nhbrs = neighbors(g,k)
+        nhbrssize = size(nhbrs,1)
+
+        probs[1:nhbrssize] = W[k,nhbrs] ## <---- Lookup time for sparse array!!!
         probs /= sum(probs)
         # Overfull and Underfull stacks
         ofull = Int64[]
         ufull = Int64[]
         # For keeping indices
 
-        append!(ufull,setdiff(1:n, W.rowval[rn]))
         # For keeping probabilities
         # Initialize indices and stacks with original probabilities
-        for (idx, i) in enumerate(W.rowval[rn])
-            U[k,i] = n*probs[idx]
-            if(U[k,i] > 1)
-                push!(ofull,i)
-            elseif(U[k,i] < 1)
-                push!(ufull,i)
+        for (idx, i) in enumerate(probs)
+            U[k,idx] = dmax*i
+            if(U[k,idx] > 1)
+                push!(ofull,idx)
+            elseif(U[k,idx] < 1)
+                push!(ufull,idx)
             else
-                K[k,i] = i
+                K[k,idx] = idx
             end
+
         end
         # Loop until all bins are "equally full"
         while !(isempty(ofull) && isempty(ufull))
@@ -55,6 +58,12 @@ function alias_preprocess(g :: SimpleWeightedGraph)
                 K[k,i] = i
             end
         end
+        # Due to floating point errors
+        # if (!isempty(ofull))
+        #     U[k,ofull] .= 1.0
+        # elseif(!isempty(ufull))
+        #     U[k,ufull] .= 1.0
+        # end
     end
     K,U
 end
@@ -63,11 +72,14 @@ function alias_draw(g,i)
     Drawing procedure of alias method after the preprocessing
     Its cost is constant!
     """
-    v = rand(1:size(g.P,1))
+    nhbrs = neighbors(g,i)
+    n,dmax = size(g.P)
+    v = rand(1:dmax)
+
     if(rand() < g.P[i,v])
         sample = v
     else
         sample = g.K[i,v]
     end
-    Int64(sample)
+    Int64(nhbrs[sample])
 end

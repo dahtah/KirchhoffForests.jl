@@ -58,12 +58,7 @@ function alias_preprocess(g :: SimpleWeightedGraph)
                 K[k,i] = i
             end
         end
-        # Due to floating point errors
-        # if (!isempty(ofull))
-        #     U[k,ofull] .= 1.0
-        # elseif(!isempty(ufull))
-        #     U[k,ufull] .= 1.0
-        # end
+
     end
     K,U
 end

@@ -21,7 +21,8 @@ function alias_preprocess(g :: SimpleWeightedGraph)
         nhbrs = neighbors(g,k)
         nhbrssize = size(nhbrs,1)
 
-        probs[1:nhbrssize] = W[k,nhbrs] ## <---- Lookup time for sparse array!!!
+        rn = W.colptr[k]:(W.colptr[k+1]-1)
+        probs[1:nhbrssize] = W.nzval[rn] ## <---- Lookup time for sparse array!!!
         probs /= sum(probs)
         # Overfull and Underfull stacks
         ofull = Int64[]

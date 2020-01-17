@@ -13,16 +13,22 @@ function alias_preprocess(g :: SimpleWeightedGraph)
 """
     W = weights(g)
     n = size(g)[1]
-    dmax = maximum(sum(W.>0,dims=1))
-    K = zeros(Int64,n,dmax)
-    U = zeros(Float64,n,dmax)
+    D = (sum(W.>0,dims=1))[1,:]
+    K = spzeros(Int64,n,n)
+    U = spzeros(Float64,n,n)
+
     for k = 1: n
-        probs = zeros(Float64,dmax)
+
         nhbrs = neighbors(g,k)
         nhbrssize = size(nhbrs,1)
 
+        probs = zeros(Float64,nhbrssize)
+
+        Kvec = zeros(Int64,nhbrssize)
+        Uvec = zeros(Float64,nhbrssize)
+
         rn = W.colptr[k]:(W.colptr[k+1]-1)
-        probs[1:nhbrssize] = W.nzval[rn] ## <---- Lookup time for sparse array!!!
+        probs = W.nzval[rn] ## <---- Lookup time for sparse array!!!
         probs /= sum(probs)
         # Overfull and Underfull stacks
         ofull = Int64[]
@@ -32,13 +38,13 @@ function alias_preprocess(g :: SimpleWeightedGraph)
         # For keeping probabilities
         # Initialize indices and stacks with original probabilities
         for (idx, i) in enumerate(probs)
-            U[k,idx] = dmax*i
-            if(U[k,idx] > 1)
+            Uvec[idx] = nhbrssize*i
+            if(Uvec[idx] > 1)
                 push!(ofull,idx)
-            elseif(U[k,idx] < 1)
+            elseif(Uvec[idx] < 1)
                 push!(ufull,idx)
             else
-                K[k,idx] = idx
+                Kvec[idx] = idx
             end
 
         end
@@ -46,20 +52,21 @@ function alias_preprocess(g :: SimpleWeightedGraph)
         while !(isempty(ofull) && isempty(ufull))
             i = pop!(ofull)
             j = pop!(ufull)
-            K[k,j] = i
+            Kvec[j] = i
             # Recompute overfull bin
-            U[k,i] = U[k,i] + U[k,j] - 1
+            Uvec[i] = Uvec[i] + Uvec[j] - 1
 
             # Reassign the bin
-            if(U[k,i] - 1.0 > 0.000001) # Due to floating point errors (but not elegant)
+            if(Uvec[i] - 1.0 > 0.000001) # Due to floating point errors (but not elegant)
                 push!(ofull,i)
-            elseif((U[k,i] - 1.0 < -0.000001))
+            elseif((Uvec[i] - 1.0 < -0.000001))
                 push!(ufull,i)
             else
-                K[k,i] = i
+                Kvec[i] = i
             end
         end
-
+        K[nhbrs,k] = nhbrs[Kvec]
+        U[nhbrs,k] = Uvec
     end
     K,U
 end
@@ -68,14 +75,12 @@ function alias_draw(g,i)
     Drawing procedure of alias method after the preprocessing
     Its cost is constant!
     """
-    nhbrs = neighbors(g,i)
-    n,dmax = size(g.P)
-    v = rand(1:dmax)
+    rn = g.P.colptr[i]:(g.P.colptr[i+1]-1)
+    v = rand(rn)
 
-    if(rand() < g.P[i,v])
-        sample = v
+    if(rand() < g.P.nzval[v])
+        return g.P.rowval[v]
     else
-        sample = g.K[i,v]
+        return g.K.nzval[v]
     end
-    Int64(nhbrs[sample])
 end

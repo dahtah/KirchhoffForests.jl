@@ -25,12 +25,12 @@ end
 # abstract type AbstractSimpleWeightedGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
 struct PreprocessedWeightedGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
     weights::SparseMatrixCSC{U, T}
-    K :: Matrix{Int64}
-    P :: Matrix{Float64}
+    K :: SparseMatrixCSC{Int64, T}
+    P :: SparseMatrixCSC{Float64, T}
 end
 
 function PreprocessedWeightedGraph(adjmx::SparseMatrixCSC{U,T}) where T <: Integer where U <: Real
-    K,P = alias_preprocess(SimpleWeightedGraph(adjmx))
+    K,P= alias_preprocess(SimpleWeightedGraph(adjmx))
     PreprocessedWeightedGraph{T, U}(adjmx,K,P)
 end
 PreprocessedWeightedGraph(g::LightGraphs.SimpleGraphs.SimpleGraph{T}, ::Type{U}=Float64) where T <: Integer where U <: Real =

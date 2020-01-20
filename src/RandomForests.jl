@@ -1,11 +1,11 @@
 module RandomForests
-using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
+using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs,NonNegLeastSquares
 import StatsBase.denserank,Statistics.mean,Base.show,Base.sum,
 StatsBase.counts
 import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.outneighbors
 
 export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
-    SimpleDiGraph,nroots,next,Partition
+    SimpleDiGraph,nroots,next,Partition,spectral_est
 export reduced_graph,smooth_ms
 export self_roots
 

@@ -1,6 +1,6 @@
 
 
-@testset "basic" begin
+#@testset "basic" begin
 import Random.seed!
 seed!(1)
 gg = grid([4,4])
@@ -16,4 +16,4 @@ end
 gs = [cycle_graph(5), wheel_graph(9),
       smallgraph(:bull), smallgraph(:tutte)]
 map((g) -> (rf=random_forest(g,rand());check_correctness(rf)),gs)
-end
+# end

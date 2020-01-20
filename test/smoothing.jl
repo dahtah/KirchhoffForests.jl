@@ -6,7 +6,9 @@
     ys = smooth(g,.1,y)
     @assert (ys/maximum(ys)) ≈ y #should be eigenvector
     ysw = smooth(SimpleWeightedGraph(g),.1,y)
-    @assert ysw ≈ ys 
+    @assert ysw ≈ ys
+    yspw = smooth(PreprocessedWeightedGraph(g),.1,y)
+    @assert yspw ≈ ys
 
     #Test propagation
     g = grid([5, 5])

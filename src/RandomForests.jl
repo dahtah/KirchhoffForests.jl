@@ -2,12 +2,18 @@ module RandomForests
 using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
 import StatsBase.denserank,Statistics.mean,Base.show,Base.sum,
 StatsBase.counts
-import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.outneighbors
+import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.degree,LightGraphs.outneighbors
+import SimpleWeightedGraphs.AbstractSimpleWeightedGraph
+import LightGraphs:
+nv,ne,outneighbors,is_directed,inneighbors
+
+include("./alias.jl")
 
 export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
-    SimpleDiGraph,nroots,next,Partition
+      SimpleDiGraph,nroots,next,Partition,PreprocessedWeightedGraph
 export reduced_graph,smooth_ms
 export self_roots
+export random_successor
 
 struct RandomForest
     next :: Array{Int}
@@ -15,6 +21,29 @@ struct RandomForest
     nroots :: Int
     root :: Array{Int,1}
 end
+
+# abstract type AbstractSimpleWeightedGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
+struct PreprocessedWeightedGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
+    weights::SparseMatrixCSC{U, T}
+    K :: SparseMatrixCSC{Int64, T}
+    P :: SparseMatrixCSC{Float64, T}
+end
+
+function PreprocessedWeightedGraph(adjmx::SparseMatrixCSC{U,T}) where T <: Integer where U <: Real
+    K,P= alias_preprocess(SimpleWeightedGraph(adjmx))
+    PreprocessedWeightedGraph{T, U}(adjmx,K,P)
+end
+PreprocessedWeightedGraph(g::LightGraphs.SimpleGraphs.SimpleGraph{T}, ::Type{U}=Float64) where T <: Integer where U <: Real =
+    PreprocessedWeightedGraph(adjacency_matrix(g, U))
+PreprocessedWeightedGraph(g::SimpleWeightedGraph)= PreprocessedWeightedGraph(g.weights)
+inneighbors(g::PreprocessedWeightedGraph, v::Integer) = g.weights[v,:].nzind
+is_directed(::Type{PreprocessedWeightedGraph}) = false
+is_directed(::Type{PreprocessedWeightedGraph{T, U}}) where T where U = false
+is_directed(g::PreprocessedWeightedGraph) = false
+ne(g::PreprocessedWeightedGraph) = nnz(g.weights)/2
+degree(g::PreprocessedWeightedGraph) = sum(g.weights,dims=1)
+degree(g::SimpleWeightedGraph) = sum(g.weights,dims=1)
+
 
 function show(io::IO, rf::RandomForest)
     println(io, "Random forest. Size of original graph $(nv(rf)).")
@@ -37,7 +66,7 @@ end
     next(rf::RandomForest)
 
 Return a vector of indices v, where v[i] = j means that node i points to node j
-in the forest. If v[i] = 0 i is a root. 
+in the forest. If v[i] = 0 i is a root.
 """
 function next(rf::RandomForest)
     rf.next
@@ -76,8 +105,7 @@ function random_forest(G::AbstractGraph,q::AbstractFloat)
     in_tree = falses(n)
     next = zeros(Int64,n)
     @inbounds for i in 1:n
-        u = i
-        
+        u = Int64(i)
         while !in_tree[u]
             if (((q+d[u]))*rand() < q)
                 in_tree[u] = true
@@ -107,14 +135,14 @@ function random_forest(G::AbstractGraph,q::AbstractVector)
     roots = Set{Int64}()
     root = zeros(Int64,nv(G))
     nroots = Int(0)
-    
+
     n = nv(G)
 
     in_tree = falses(n)
     next = zeros(Int64,n)
     @inbounds for i in 1:n
         u = i
-        
+
         while !in_tree[u]
             if (rand() < q[u]/(q[u]+degree(G,u)))
                 in_tree[u] = true
@@ -140,8 +168,6 @@ function random_forest(G::AbstractGraph,q::AbstractVector)
     (next=next,roots=roots,nroots=nroots,root=root)
 end
 
-
-
 function avg_rf(root :: Array{Int64,1},y :: Array{Float64,1})
     xhat = zeros(Float64,length(y))
     #    ysum = weighted_sum_by(y,deg,state.root)
@@ -158,12 +184,13 @@ function sure(y,xhat,nroots,s2)
     -length(y)*s2+err+2*s2*nroots
 end
 
-function random_successor(G::SimpleGraph{T},i :: T) where T <: Int
+function random_successor(G::SimpleGraph{Int},i :: T) where T <: Int64
     nbrs = neighbors(G, i)
     rand(nbrs)
+
 end
 
-function random_successor(g :: SimpleWeightedGraph,i :: T) where T <: Int
+function random_successor(g :: SimpleWeightedGraph,i :: T) where T <: Int64
     W = weights(g)
     rn = W.colptr[i]:(W.colptr[i+1]-1)
     w = W.nzval[rn]
@@ -178,10 +205,19 @@ function random_successor(g :: SimpleWeightedGraph,i :: T) where T <: Int
     W.rowval[rn[1]+j-1]
 end
 
+
+function random_successor(g :: PreprocessedWeightedGraph,i :: T) where T <: Int64
+
+    sample = alias_draw(g,i)
+    sample
+end
+
+
+
 """
     SimpleDiGraph(rf :: RandomForest)
 
-Convert a RandomForest rf to a SimpleDiGraph. 
+Convert a RandomForest rf to a SimpleDiGraph.
 
 # Example
 
@@ -256,4 +292,3 @@ include("multiscale.jl")
 
 
 end # module
-

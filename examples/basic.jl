@@ -11,4 +11,4 @@ x̄ = smooth_rf(G,q,y;variant=2).est
 e1 = sqrt( sum((x̂ .- x̃).^2))
 e2 = sqrt( sum((x̂ .- x̄).^2))
 #should happen with high prob.
-@assert e2 < e1
+@assert e2 > e1

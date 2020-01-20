@@ -24,11 +24,18 @@ function show(io::IO, p::Partition)
     println(io,"Number of parts $(p.nparts)")
 end
 
+function laplacian_matrix(g :: PreprocessedWeightedGraph)
+    W = g.weights
+    s = sum(W,dims=1)
+    D = spdiagm(0 => s[:])
+    D - W
+end
+
 function laplacian_matrix(g :: SimpleWeightedGraph)
     W = weights(g)
     s = sum(W,dims=1)
     D = spdiagm(0 => s[:])
-    D - W 
+    D - W
 end
 
 function laplacian_matrix(g :: SimpleGraph)
@@ -156,11 +163,11 @@ rf*collect(1:nv(g))
 ```
 
 """
-function Base.:*(rf::RandomForest, Y::Matrix) 
+function Base.:*(rf::RandomForest, Y::Matrix)
     Y[rf.root,:]
 end
 
-function Base.:*(rf::RandomForest, Y::Vector) 
+function Base.:*(rf::RandomForest, Y::Vector)
     Y[rf.root]
 end
 
@@ -169,7 +176,7 @@ end
 *(p::Partition,Y :: Matrix)
 
 Treating the graph partition as a linear operator, compute the average of Y
-over the partition. 
+over the partition.
 
 # Example
 

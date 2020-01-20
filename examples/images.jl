@@ -8,8 +8,8 @@ function denoise(im;q=.4,nrep=20)
     G = grid([nx,ny])
     y = im[:]
     xhat = smooth(G,q,y)
-    xtilde = smooth_rf(G,q,y;variant=1,nrep=nrep).est
-    xbar = smooth_rf(G,q,y;variant=2,nrep=nrep).est
+    xtilde = smooth_rf(PreprocessedWeightedGraph(G),q,y;variant=1,nrep=nrep).est
+    xbar = smooth_rf(PreprocessedWeightedGraph(G),q,y;variant=2,nrep=nrep).est
     gr, frames, canvases = canvasgrid((2,2))  # 1 row, 2 columns
     rs = (v) -> reshape(v,nx,ny)
     imshow(canvases[1,1], rs(y))

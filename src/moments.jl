@@ -1,14 +1,30 @@
 # Moment estimators
 
+
+
 #self-roots
 function self_roots(rfs :: Vector{RandomForest})
     k = length(rfs)
     n = nv(rfs[1])
-    v = 1:n
+    v = rfs[1].root
     for i in 2:k
         v = rfs[i].root[v]
     end
-    sum(v .== rfs[1].root)
+    sum(v .== 1:n)
+end
+
+function self_roots(rfs :: Vector{RandomForest},order)
+    @assert order<=length(rfs)
+    l = length(rfs)
+    res = Vector{Int}()
+    for cc in combinations(1:l,order)
+        #looping over permutations is overkill, need to improve this bit
+        #some permutations yield identical results, eg. when order==2
+        for pp in permutations(1:order) 
+            push!(res,self_roots(rfs[cc][pp]))
+        end
+    end
+    mean(res)
 end
 
 #brute-force spectral estimation

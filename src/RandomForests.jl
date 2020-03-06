@@ -3,7 +3,7 @@ using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs,NonNegLeastSqu
 import StatsBase.denserank,Statistics.mean,Base.show,Base.sum,
 StatsBase.counts
 import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.outneighbors
-
+import Combinatorics.combinations, Combinatorics.permutations
 export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
     SimpleDiGraph,nroots,next,Partition,spectral_est
 export reduced_graph,smooth_ms

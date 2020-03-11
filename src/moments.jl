@@ -28,12 +28,27 @@ function self_roots(rfs :: Vector{RandomForest},order)
 end
 
 #brute-force spectral estimation
-function spectral_est(g :: AbstractGraph,qv,mv,nbins)
+function deconv_matrix(g :: AbstractGraph,qv,nbins)
 #    m = length(qv)
     α = 2*maximum(degree(g))
     grid = LinRange(-5,log.(α),nbins+1)
     #f = (a,b,q) -> (q/(b-a))*(log(q+b) - log(q+a))
     #grid centers
+    x = [.5*(grid[i+1]+grid[i]) for i in 1:nbins]
+    #form system matrix
+    gf = (x,ν) -> 1/(1+exp(x-ν))
+    M = reduce(vcat,[ gf.(x,ν)  for ν in log.(qv)]')
+    (x,M)
+end
+
+function solve_nneg(M,y)
+    nonneg_lsq(M,y,alg=:nnls)
+end
+
+#brute-force spectral estimation
+function spectral_est(g :: AbstractGraph,qv,mv,nbins)
+    α = 2*maximum(degree(g))
+    grid = LinRange(-5,log.(α),nbins+1)
     x = [.5*(grid[i+1]+grid[i]) for i in 1:nbins]
     #form system matrix
     gf = (x,ν) -> 1/(1+exp(x-ν))
@@ -45,3 +60,4 @@ function spectral_est(g :: AbstractGraph,qv,mv,nbins)
     @show res
     (x,w,M)
 end
+

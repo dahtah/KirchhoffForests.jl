@@ -2,7 +2,7 @@
 
 A repository of code related to random forests on graphs and associated estimators. This code is experimental, don't use it for anything serious (yet).
 
-Authors: Simon Barthelmé, Nicolas Tremblay (CNRS, Gipsa-lab).
+Authors: Simon Barthelmé, Nicolas Tremblay, Yusuf Yigit Pilavci (CNRS, Gipsa-lab).
 
 # Quick start
 

@@ -165,7 +165,7 @@ function random_forest(G::AbstractGraph,q::AbstractVector)
             u = next[u]
         end
     end
-    RandomForest(next=next,roots=roots,nroots=nroots,root=root)
+    RandomForest(next,roots,nroots,root)
 end
 
 function avg_rf(root :: Array{Int64,1},y :: Array{Float64,1})

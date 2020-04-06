@@ -124,7 +124,7 @@ function smooth(g :: AbstractGraph{T},q :: Vector,Y :: SparseMatrixCSC) where T
     C\(Q*Y)
 end
 
-function smooth_rf(g :: AbstractGraph,q,Y;nrep=10,variant=1,mean_correction=false)
+function smooth_rf(g :: AbstractGraph,q :: Float64,Y;nrep=10,variant=1,mean_correction=false)
     xhat = zeros(size(Y));
     nr = 0;
     Ym = 0;
@@ -147,7 +147,29 @@ function smooth_rf(g :: AbstractGraph,q,Y;nrep=10,variant=1,mean_correction=fals
     (est=xhat,nroots=nr/nrep)
 end
 
-
+function smooth_rf(g :: AbstractGraph,q :: Vector,Y;nrep=10,variant=1,mean_correction=false)
+    xhat = zeros(size(Y));
+    nr = 0;
+    Ym = 0;
+    Y = Diagonal(q)*Y
+    for indr in Base.OneTo(nrep)
+        rf = random_forest(g,q)
+        nr += rf.nroots
+        if variant==1
+            xhat += rf*Y
+#            xhat += Y[rf.root,:]
+        elseif variant==2
+            xhat += Partition(rf)*Y ./ Partition(rf)*q
+        end
+    end
+    xhat /= nrep
+    if (mean_correction)
+        Ym = mean(Y,dims=1)
+        Y = Y .- Ym
+        xhat = xhat .- mean(xhat,dims=1) .+ Ym
+    end
+    (est=xhat,nroots=nr/nrep)
+end
 """
 *(rf::RandomForest,Y :: Matrix)
 

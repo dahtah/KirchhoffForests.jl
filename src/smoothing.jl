@@ -151,7 +151,7 @@ function smooth_rf(g :: AbstractGraph,q :: Vector,Y;nrep=10,variant=1,mean_corre
     xhat = zeros(size(Y));
     nr = 0;
     Ym = 0;
-    Y = Diagonal(q)*Y
+    Yq = Diagonal(q)*Y
     for indr in Base.OneTo(nrep)
         rf = random_forest(g,q)
         nr += rf.nroots
@@ -159,7 +159,8 @@ function smooth_rf(g :: AbstractGraph,q :: Vector,Y;nrep=10,variant=1,mean_corre
             xhat += rf*Y
 #            xhat += Y[rf.root,:]
         elseif variant==2
-            xhat += Partition(rf)*Y ./ Partition(rf)*q
+            m = Partition(rf)*q
+            xhat += Partition(rf)*Yq ./ m
         end
     end
     xhat /= nrep

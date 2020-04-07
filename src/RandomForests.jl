@@ -141,7 +141,7 @@ function random_forest(G::AbstractGraph,q::AbstractVector)
     in_tree = falses(n)
     next = zeros(Int64,n)
     @inbounds for i in 1:n
-        u = i
+        u = Int64(i)
 
         while !in_tree[u]
             if (rand() < q[u]/(q[u]+degree(G,u)))
@@ -165,7 +165,7 @@ function random_forest(G::AbstractGraph,q::AbstractVector)
             u = next[u]
         end
     end
-    (next=next,roots=roots,nroots=nroots,root=root)
+    RandomForest(next,roots,nroots,root)
 end
 
 function avg_rf(root :: Array{Int64,1},y :: Array{Float64,1})

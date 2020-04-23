@@ -28,7 +28,7 @@ end
 
 const testdir = dirname(@__FILE__)
 tests = [
-    "basic","weighted","smoothing","aliascomparison"
+    "basic","weighted","smoothing","aliascomparison","random_tree_montecarlo"
 ]
 
 @testset "RandomForests" begin

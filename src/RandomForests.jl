@@ -1,7 +1,7 @@
 module RandomForests
 using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
 import StatsBase.denserank,Statistics.mean,Base.show,Base.sum,
-StatsBase.counts
+StatsBase.counts, StatsBase.sample,StatsBase.Weights
 import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.degree,LightGraphs.outneighbors
 import SimpleWeightedGraphs.AbstractSimpleWeightedGraph
 import LightGraphs:
@@ -14,6 +14,7 @@ export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
 export reduced_graph,smooth_ms
 export self_roots
 export random_successor
+export random_tree_mc
 
 struct RandomForest
     next :: Array{Int}
@@ -180,7 +181,6 @@ end
 
 function sure(y,xhat,nroots,s2)
     err = sum((y .- xhat).^2)
-    @show err
     -length(y)*s2+err+2*s2*nroots
 end
 
@@ -241,7 +241,7 @@ end
 include("smoothing.jl")
 include("moments.jl")
 include("multiscale.jl")
-
+include("markov_chain.jl")
 # function smooth_rf(G :: SimpleGraph{T},q,y :: Vector;nrep=10,variant=1) where T
 #     xhat = zeros(Float64,length(y));
 #     nr = 0;

@@ -220,6 +220,12 @@ function Base.:*(p::Partition,y :: Vector)
     p*reshape(y,:,1) |> vec
 end
 
+function LinearAlgebra.:diag(p::Partition)
+    w = 1 ./ p.sizep
+    w[p.part]
+end
+
+
 function average(p::Partition,y :: Real)
     repeat([y],p.nparts)
 end
@@ -290,3 +296,4 @@ end
 function sum(p::Partition,y :: Vector)
     sum(p,reshape(y,:,1)) |> vec
 end
+

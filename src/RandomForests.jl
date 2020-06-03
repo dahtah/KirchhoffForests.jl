@@ -14,6 +14,7 @@ export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
 export reduced_graph,smooth_ms
 export self_roots
 export random_successor
+export random_spanning_tree
 
 struct RandomForest
     next :: Array{Int}
@@ -238,6 +239,7 @@ function SimpleDiGraph(rf :: RandomForest)
     ff
 end
 
+include("random_spanning_tree.jl")
 include("smoothing.jl")
 include("moments.jl")
 include("multiscale.jl")

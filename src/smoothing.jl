@@ -133,6 +133,7 @@ function smooth_rf(g :: AbstractGraph,q :: Float64,Y;nrep=10,variant=1,mean_corr
             rf = random_forest(g,q)
         else
             rf = random_forest(g,q,B=rootset)
+        end
         nr += rf.nroots
         if variant==1
             xhat += rf*Y
@@ -160,6 +161,7 @@ function smooth_rf(g :: AbstractGraph,q :: Vector,Y;nrep=10,variant=1,mean_corre
             rf = random_forest(g,q)
         else
             rf = random_forest(g,q,B=rootset)
+        end
 
         nr += rf.nroots
         if variant==1

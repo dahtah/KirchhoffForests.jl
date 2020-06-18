@@ -132,7 +132,7 @@ function smooth_rf(g :: AbstractGraph,q :: Float64, rootset::AbstractVector,Y;nr
         if(isempty(rootset))
             rf = random_forest(g,q)
         else
-            rf = random_forest(g,q,B=rootset)
+            rf = random_forest(g,q,rootset)
         end
         nr += rf.nroots
         if variant==1
@@ -160,7 +160,7 @@ function smooth_rf(g :: AbstractGraph,q :: Vector,Y,rootset=[];nrep=10,variant=1
         if(isempty(rootset))
             rf = random_forest(g,q)
         else
-            rf = random_forest(g,q,B=rootset)
+            rf = random_forest(g,q,rootset)
         end
 
         nr += rf.nroots

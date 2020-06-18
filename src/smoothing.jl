@@ -124,12 +124,15 @@ function smooth(g :: AbstractGraph{T},q :: Vector,Y :: SparseMatrixCSC) where T
     C\(Q*Y)
 end
 
-function smooth_rf(g :: AbstractGraph,q :: Float64,Y;nrep=10,variant=1,mean_correction=false)
+function smooth_rf(g :: AbstractGraph,q :: Float64,Y;nrep=10,variant=1,mean_correction=false,rootset=[])
     xhat = zeros(size(Y));
     nr = 0;
     Ym = 0;
     for indr in Base.OneTo(nrep)
-        rf = random_forest(g,q)
+        if(isempty(rootset))
+            rf = random_forest(g,q)
+        else
+            rf = random_forest(g,q,B=rootset)
         nr += rf.nroots
         if variant==1
             xhat += rf*Y
@@ -147,13 +150,17 @@ function smooth_rf(g :: AbstractGraph,q :: Float64,Y;nrep=10,variant=1,mean_corr
     (est=xhat,nroots=nr/nrep)
 end
 
-function smooth_rf(g :: AbstractGraph,q :: Vector,Y;nrep=10,variant=1,mean_correction=false)
+function smooth_rf(g :: AbstractGraph,q :: Vector,Y;nrep=10,variant=1,mean_correction=false,rootset=[])
     xhat = zeros(size(Y));
     nr = 0;
     Ym = 0;
     Yq = Diagonal(q)*Y
     for indr in Base.OneTo(nrep)
-        rf = random_forest(g,q)
+        if(isempty(rootset))
+            rf = random_forest(g,q)
+        else
+            rf = random_forest(g,q,B=rootset)
+
         nr += rf.nroots
         if variant==1
             xhat += rf*Y
@@ -296,4 +303,3 @@ end
 function sum(p::Partition,y :: Vector)
     sum(p,reshape(y,:,1)) |> vec
 end
-

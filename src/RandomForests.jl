@@ -169,6 +169,44 @@ function random_forest(G::AbstractGraph,q::AbstractVector)
     RandomForest(next,roots,nroots,root)
 end
 
+function random_forest(G::AbstractGraph,q::AbstractVector,B::AbstractVector)
+    @assert length(q)==nv(G)
+    roots = Set{Int64}()
+    root = zeros(Int64,nv(G))
+    nroots = Int(0)
+
+    n = nv(G)
+
+    in_tree = falses(n)
+    next = zeros(Int64,n)
+    @inbounds for i in 1:n
+        u = Int64(i)
+
+        while !in_tree[u]
+            if ((rand() < q[u]/(q[u]+degree(G,u))) || (u in B))
+                in_tree[u] = true
+                push!(roots,u)
+                nroots+=1
+                root[u] = u
+                next[u] = 0
+            else
+                next[u] = random_successor(G,u)
+                u = next[u]
+            end
+        end
+        r = root[u]
+
+        #Retrace steps, erasing loops
+        u = i
+        while !in_tree[u]
+            root[u] = r
+            in_tree[u] = true
+            u = next[u]
+        end
+    end
+    RandomForest(next,roots,nroots,root)
+end
+
 function avg_rf(root :: Array{Int64,1},y :: Array{Float64,1})
     xhat = zeros(Float64,length(y))
     #    ysum = weighted_sum_by(y,deg,state.root)

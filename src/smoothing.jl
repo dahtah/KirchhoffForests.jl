@@ -153,7 +153,7 @@ function smooth_rf(g :: AbstractGraph,q :: Float64,Y,rootset=[];nrep=10,variant=
 end
 function smooth_rf_nan(g :: AbstractGraph,q :: AbstractVector,Y,rootset=[];nrep=10,variant=1,mean_correction=false)
     xhat = zeros(size(Y));
-    xhat = zeros(size(Y));
+    trep = zeros(size(Y));
 
     nr = 0;
     Ym = 0;
@@ -186,7 +186,7 @@ end
 
 function smooth_rf_nan(g :: AbstractGraph,q :: Float64,Y,rootset=[];nrep=10,variant=1,mean_correction=false)
     xhat = zeros(size(Y));
-    xhat = zeros(size(Y));
+    trep = zeros(size(Y))
 
     nr = 0;
     Ym = 0;

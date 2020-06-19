@@ -167,7 +167,7 @@ function smooth_rf_nan(g :: AbstractGraph,q :: AbstractVector,Y,rootset=[];nrep=
         # if variant==1
         xtemp = (rf*Y)
         trep += (isequal.( xtemp, missing))
-        xtemp[isequal.( missY, missing)] .= 0
+        xtemp[isequal.( xtemp, missing)] .= 0
         xhat += xtemp
 #            xhat += Y[rf.root,:]
         # elseif variant==2
@@ -200,7 +200,7 @@ function smooth_rf_nan(g :: AbstractGraph,q :: Float64,Y,rootset=[];nrep=10,vari
         # if variant==1
         xtemp = (rf*Y)
         trep += (isequal.( xtemp, missing))
-        xtemp[isequal.( missY, missing)] .= 0
+        xtemp[isequal.( xtemp, missing)] .= 0
         xhat += xtemp
 #            xhat += Y[rf.root,:]
         # elseif variant==2

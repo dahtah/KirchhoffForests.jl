@@ -151,6 +151,38 @@ function smooth_rf(g :: AbstractGraph,q :: Float64,Y,rootset=[];nrep=10,variant=
     end
     (est=xhat,nroots=nr/nrep)
 end
+function smooth_rf_nan(g :: AbstractGraph,q :: AbstractVector,Y,rootset=[];nrep=10,variant=1,mean_correction=false)
+    xhat = zeros(size(Y));
+    xhat = zeros(size(Y));
+
+    nr = 0;
+    Ym = 0;
+    for indr in Base.OneTo(nrep)
+        if(isempty(rootset))
+            rf = random_forest(g,q)
+        else
+            rf = random_forest(g,q,rootset)
+        end
+        nr += rf.nroots
+        # if variant==1
+        xtemp = (rf*Y)
+        trep += Int64(xtemp .!= missing)
+        xtemp[xtemp .!= missing] .= 0
+        xhat += xtemp
+#            xhat += Y[rf.root,:]
+        # elseif variant==2
+        #     xhat += Partition(rf)*Y
+        # end
+    end
+    xhat ./= trep
+    if (mean_correction)
+        Ym = mean(Y,dims=1)
+        Y = Y .- Ym
+        xhat = xhat .- mean(xhat,dims=1) .+ Ym
+    end
+    (est=xhat,nroots=nr/nrep)
+end
+
 
 function smooth_rf_nan(g :: AbstractGraph,q :: Float64,Y,rootset=[];nrep=10,variant=1,mean_correction=false)
     xhat = zeros(size(Y));

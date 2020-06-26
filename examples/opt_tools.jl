@@ -40,48 +40,48 @@ plotly()
 #     return exp.(t_k)
 # end
 
-function irls_(G,y,z0,mu; numofiter = 100,tol=0.001, method="exact",nrep=100)
-    B = incidence_matrix(G,oriented=true)
-    k = 0
-    increment = norm(z0)
-    z_k = copy(z0)
-    z_prev = copy(z0)
-    while( increment > tol && k < numofiter  )
-        zprev = copy(z_k)
-        update =(abs.(B'*z_k) .+ 0.1).^(-1)
-        M_k = spdiagm(0 => (update))
-
-        println("Method: $method,Iteration $k ,Increment: $increment. ")
-
-        # if(norm(update) == Inf)
-        #     break
-        # end
-        L_k = B*M_k*(B')
-        L_k[diagind(L_k)] .= 0
-        G = SimpleWeightedGraph(-(L_k + L_k')./2)
-
-        if (method=="exact")
-            z_k = (smooth(G,mu,y))
-        else
-            ybar = repeat(mean(y, dims=1), outer=size(y,1))
-            Δ = -ybar + y
-            if (method=="xtilde")
-                z_k = (ybar + smooth_rf(G,mu,Δ,[];nrep=nrep,variant=1).est)
-            elseif (method=="xbar")
-                z_k = (ybar + smooth_rf(G,mu,Δ,[];nrep=nrep,variant=2).est)
-            end
-        end
-        k += 1
-        increment = norm(zprev - z_k)
-    end
-    println("Method: $method. Terminated after $k iterations, increment $increment")
-
-    return z_k
-end
+# function irls_(G,y,z0,mu; numofiter = 100,tol=0.001, method="exact",nrep=100)
+#     B = incidence_matrix(G,oriented=true)
+#     k = 0
+#     increment = norm(z0)
+#     z_k = copy(z0)
+#     z_prev = copy(z0)
+#     while( increment > tol && k < numofiter  )
+#         zprev = copy(z_k)
+#         update =(abs.(B'*z_k) .+ 0.1).^(-1)
+#         M_k = spdiagm(0 => (update))
+#
+#         println("Method: $method,Iteration $k ,Increment: $increment. ")
+#
+#         # if(norm(update) == Inf)
+#         #     break
+#         # end
+#         L_k = B*M_k*(B')
+#         L_k[diagind(L_k)] .= 0
+#         G = SimpleWeightedGraph(-(L_k + L_k')./2)
+#
+#         if (method=="exact")
+#             z_k = (smooth(G,mu,y))
+#         else
+#             ybar = repeat(mean(y, dims=1), outer=size(y,1))
+#             Δ = -ybar + y
+#             if (method=="xtilde")
+#                 z_k = (ybar + smooth_rf(G,mu,Δ,[];nrep=nrep,variant=1).est)
+#             elseif (method=="xbar")
+#                 z_k = (ybar + smooth_rf(G,mu,Δ,[];nrep=nrep,variant=2).est)
+#             end
+#         end
+#         k += 1
+#         increment = norm(zprev - z_k)
+#     end
+#     println("Method: $method. Terminated after $k iterations, increment $increment")
+#
+#     return z_k
+# end
 
 
 imname = "lake_gray"
-im = imresize(testimage(imname), 32, 32)
+im = imresize(testimage(imname), 64, 64)
 im = Int64.(floor.(Float64.(Gray24.(im))*256))
 nx = size(im,1)
 ny = size(im,2)
@@ -90,7 +90,6 @@ G = LightGraphs.grid([nx,ny])
 im = im[:]
 im_noisy = zeros(size(im))
 im = zeros(size(im))
-im[1] = 1
 
 for (idx,i) in enumerate(im)
     im_noisy[idx] =rand(Normal(i,0.1))# rand(Poisson(i))
@@ -104,9 +103,9 @@ xbar = zeros(size(im))
 
 z0 = (rand(nv(G)))
 
-x = ((irls_(G,y,z0,1.5;numofiter = 100,tol=0.001, method="exact")))
-xtilde = ((irls_(G,y,z0,1.5;numofiter = 100,tol=0.001, method="xtilde",nrep=100)))
-xbar = ((irls_(G,y,z0,1.5;numofiter = 100,tol=0.001, method="xbar",nrep=100)))
+x = ((irls(G,y,z0,1.5;numofiter = 100,tol=0.001, method="exact")))
+xtilde = ((irls(G,y,z0,1.5;numofiter = 100,tol=0.001, method="xtilde",nrep=100)))
+xbar = ((irls(G,y,z0,1.5;numofiter = 100,tol=0.001, method="xbar",nrep=100)))
 # end
 # Gray.(reshape(y./256,nx,ny))
 # Gray.(reshape(x./256,nx,ny))

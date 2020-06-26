@@ -8,7 +8,7 @@ function newton(G,y,t0,mu;α=0.001,numofiter = 100,tol=0.001, method="exact",nre
 
     while( increment > tol && k < numofiter)
         vec_k = 1.0 .- (y ./ exp.(t_k)) + ((L*t_k)./(mu .* exp.(t_k)))
-        q = 1 ./ (mu .* exp.(t_k))
+        q =  (mu .* exp.(t_k))
         tprev = copy(t_k)
         println("Iteration $k, increment $increment")
 

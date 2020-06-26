@@ -81,7 +81,7 @@ plotly()
 
 
 imname = "lake_gray"
-im = imresize(testimage(imname), 64, 64)
+im = imresize(testimage(imname), 10, 10)
 im = Int64.(floor.(Float64.(Gray24.(im))*256))
 nx = size(im,1)
 ny = size(im,2)
@@ -91,7 +91,7 @@ im = im[:]
 im_noisy = zeros(size(im))
 
 for (idx,i) in enumerate(im)
-    im_noisy[idx] =rand(Normal(i,i/2))# rand(Poisson(i))
+    im_noisy[idx] =  rand(Poisson(i))
 end
 # imshow(reshape(im,nx,ny))
 x = zeros(size(im))
@@ -102,12 +102,12 @@ y = im_noisy
 
 z0 = (rand(nv(G)))
 
-x = ((newton(G,y,z0,0.5;numofiter = 10,tol=0.001, method="exact")))
-xtilde = ((newton(G,y,z0,0.5;numofiter = 10,tol=0.001, method="xtilde",nrep=100)))
-xbar = ((newton(G,y,z0,0.5;numofiter = 10,tol=0.001, method="xbar",nrep=100)))
+x = ((newton(G,y,z0,1.0;numofiter = 100,tol=0.001, method="exact")))
+xtilde = ((newton(G,y,z0,1.0;numofiter = 100,tol=0.001, method="xtilde",nrep=100)))
+xbar = ((newton(G,y,z0,1.0;numofiter = 100,tol=0.001, method="xbar",nrep=100)))
 # end
-# Gray.(reshape(y./256,nx,ny))
-# Gray.(reshape(x./256,nx,ny))
+Gray.(reshape(y./256,nx,ny))
+Gray.(reshape(x./256,nx,ny))
 # Gray.(reshape(xtilde./256,nx,ny))
 # Gray.(reshape(xbar./256,nx,ny))
 # Gray.(reshape(a./256,nx,ny))

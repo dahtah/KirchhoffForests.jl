@@ -89,23 +89,22 @@ rs = (v) -> reshape(v,nx,ny)
 G = LightGraphs.grid([nx,ny])
 im = im[:]
 im_noisy = zeros(size(im))
-im = zeros(size(im))
 
 for (idx,i) in enumerate(im)
-    im_noisy[idx] =rand(Normal(i,0.1))# rand(Poisson(i))
+    im_noisy[idx] =rand(Normal(i,i/2))# rand(Poisson(i))
 end
 # imshow(reshape(im,nx,ny))
 x = zeros(size(im))
 xtilde = zeros(size(im))
 xbar = zeros(size(im))
 # for i = 1 : k
-# y = im_noisy
+y = im_noisy
 
 z0 = (rand(nv(G)))
 
-x = ((irls(G,y,z0,1.5;numofiter = 100,tol=0.001, method="exact")))
-xtilde = ((irls(G,y,z0,1.5;numofiter = 100,tol=0.001, method="xtilde",nrep=100)))
-xbar = ((irls(G,y,z0,1.5;numofiter = 100,tol=0.001, method="xbar",nrep=100)))
+x = ((newton(G,y,z0,0.5;numofiter = 10,tol=0.001, method="exact")))
+xtilde = ((newton(G,y,z0,0.5;numofiter = 10,tol=0.001, method="xtilde",nrep=100)))
+xbar = ((newton(G,y,z0,0.5;numofiter = 10,tol=0.001, method="xbar",nrep=100)))
 # end
 # Gray.(reshape(y./256,nx,ny))
 # Gray.(reshape(x./256,nx,ny))
@@ -117,7 +116,6 @@ plot(y)
 plot!(x)
 plot!(xtilde)
 plot!(xbar)
-plot!(a)
 # imshow(reshape(x,nx,ny))
 # imshow(reshape(xtilde,nx,ny))
 # imshow(reshape(xbar,nx,ny))

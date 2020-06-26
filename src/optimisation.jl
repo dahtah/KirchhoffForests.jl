@@ -35,13 +35,19 @@ function irls(G,y,z0,mu;numofiter = 100,tol=0.001, method="exact",nrep=100)
     increment = norm(z0)
     z_k = copy(z0)
     z_prev = copy(z0)
-    while( increment > tol && k < numofiter)
+    while( increment > tol && k < numofiter  )
         zprev = copy(z_k)
-        M_k = spdiagm(0 => (B'*z_k).^(-1))
+        update =(abs.(B'*z_k) .+ 0.0001).^(-1)
+        M_k = spdiagm(0 => (update))
+
+        println("Iteration $k ,Increment: $increment. ")
+
+        # if(norm(update) == Inf)
+        #     break
+        # end
         L_k = B*M_k*(B')
         L_k[diagind(L_k)] .= 0
-        G = SimpleGraph(-(L_k))
-        println("Iteration $k, increment $increment")
+        G = SimpleWeightedGraph(-(L_k + L_k')./2)
 
         if (method=="exact")
             z_k = (smooth(G,mu,y))

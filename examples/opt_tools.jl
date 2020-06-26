@@ -1,4 +1,4 @@
-using LightGraphs
+using LightGraphs,SimpleWeightedGraphs
 using RandomForests
 using LinearAlgebra
 using SparseArrays
@@ -39,43 +39,49 @@ plotly()
 #     println("Method: $method. Terminated after $k iterations, increment $increment")
 #     return exp.(t_k)
 # end
-#
-# function irls(G,y,z0,mu;numofiter = 100,tol=0.001, method="exact",nrep=100)
-#     B = incidence_matrix(G,oriented=true)
-#     k = 0
-#     increment = norm(z0)
-#     z_k = copy(z0)
-#     z_prev = copy(z0)
-#     while( increment > tol && k < numofiter)
-#         zprev = copy(z_k)
-#         M_k = spdiagm(0 => (B'*z_k).^(-1))
-#         L_k = B*M_k*(B')
-#         L_k[diagind(L_k)] .= 0
-#         G = SimpleGraph(-(L_k))
-#         println("Iteration $k, increment $increment")
-#
-#         if (method=="exact")
-#             z_k = (smooth(G,mu,y))
-#         else
-#             ybar = repeat(mean(y, dims=1), outer=size(y,1))
-#             Δ = -ybar + y
-#             if (method=="xtilde")
-#                 z_k = (ybar + smooth_rf(G,mu,Δ,[];nrep=nrep,variant=1).est)
-#             elseif (method=="xbar")
-#                 z_k = (ybar + smooth_rf(G,mu,Δ,[];nrep=nrep,variant=2).est)
-#             end
-#         end
-#         k += 1
-#         increment = norm(zprev - z_k)
-#     end
-#     println("Method: $method. Terminated after $k iterations, increment $increment")
-#
-#     return z_k
-# end
+
+function irls_(G,y,z0,mu; numofiter = 100,tol=0.001, method="exact",nrep=100)
+    B = incidence_matrix(G,oriented=true)
+    k = 0
+    increment = norm(z0)
+    z_k = copy(z0)
+    z_prev = copy(z0)
+    while( increment > tol && k < numofiter  )
+        zprev = copy(z_k)
+        update =(abs.(B'*z_k) .+ 0.1).^(-1)
+        M_k = spdiagm(0 => (update))
+
+        println("Method: $method,Iteration $k ,Increment: $increment. ")
+
+        # if(norm(update) == Inf)
+        #     break
+        # end
+        L_k = B*M_k*(B')
+        L_k[diagind(L_k)] .= 0
+        G = SimpleWeightedGraph(-(L_k + L_k')./2)
+
+        if (method=="exact")
+            z_k = (smooth(G,mu,y))
+        else
+            ybar = repeat(mean(y, dims=1), outer=size(y,1))
+            Δ = -ybar + y
+            if (method=="xtilde")
+                z_k = (ybar + smooth_rf(G,mu,Δ,[];nrep=nrep,variant=1).est)
+            elseif (method=="xbar")
+                z_k = (ybar + smooth_rf(G,mu,Δ,[];nrep=nrep,variant=2).est)
+            end
+        end
+        k += 1
+        increment = norm(zprev - z_k)
+    end
+    println("Method: $method. Terminated after $k iterations, increment $increment")
+
+    return z_k
+end
 
 
 imname = "lake_gray"
-im = imresize(testimage(imname), 64, 64)
+im = imresize(testimage(imname), 32, 32)
 im = Int64.(floor.(Float64.(Gray24.(im))*256))
 nx = size(im,1)
 ny = size(im,2)
@@ -83,29 +89,44 @@ rs = (v) -> reshape(v,nx,ny)
 G = LightGraphs.grid([nx,ny])
 im = im[:]
 im_noisy = zeros(size(im))
+im = zeros(size(im))
+im[1] = 1
+
 for (idx,i) in enumerate(im)
-    im_noisy[idx] = rand(Poisson(i))
+    im_noisy[idx] =rand(Normal(i,0.1))# rand(Poisson(i))
 end
 # imshow(reshape(im,nx,ny))
 x = zeros(size(im))
 xtilde = zeros(size(im))
 xbar = zeros(size(im))
 # for i = 1 : k
-y = im_noisy
-z0 = exp.(rand(nv(G)))
+# y = im_noisy
 
-x = Int64.(floor.(newton(G,y,z0,1.0;numofiter = 100,tol=0.001, method="exact")))
-xtilde = Int64.(floor.(newton(G,y,z0,1.0;numofiter = 100,tol=0.001, method="xtilde",nrep=10)))
-xbar = Int64.(floor.(newton(G,y,z0,1.0;numofiter = 100,tol=0.001, method="xbar",nrep=10)))
+z0 = (rand(nv(G)))
+
+x = ((irls_(G,y,z0,1.5;numofiter = 100,tol=0.001, method="exact")))
+xtilde = ((irls_(G,y,z0,1.5;numofiter = 100,tol=0.001, method="xtilde",nrep=100)))
+xbar = ((irls_(G,y,z0,1.5;numofiter = 100,tol=0.001, method="xbar",nrep=100)))
 # end
-Gray.(reshape(y./256,nx,ny))
-Gray.(reshape(x./256,nx,ny))
-Gray.(reshape(xtilde./256,nx,ny))
-Gray.(reshape(xbar./256,nx,ny))
+# Gray.(reshape(y./256,nx,ny))
+# Gray.(reshape(x./256,nx,ny))
+# Gray.(reshape(xtilde./256,nx,ny))
+# Gray.(reshape(xbar./256,nx,ny))
+# Gray.(reshape(a./256,nx,ny))
 
+plot(y)
+plot!(x)
+plot!(xtilde)
+plot!(xbar)
+plot!(a)
 # imshow(reshape(x,nx,ny))
 # imshow(reshape(xtilde,nx,ny))
 # imshow(reshape(xbar,nx,ny))
+display(norm(im-y)./norm(im))
+display(norm(im-x)./norm(im))
+display(norm(im-xtilde)./norm(im))
+display(norm(im-xbar)./norm(im))
+
 # display(ImageQualityIndexes.assess_psnr(x, im))
 # display(ImageQualityIndexes.assess_psnr(xtilde, im))
 # display(ImageQualityIndexes.assess_psnr(xbar, im))

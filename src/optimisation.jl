@@ -1,5 +1,5 @@
 
-function newton(G,y,t0,mu;α=0.001,numofiter = 100,tol=0.001, method="exact",nrep=100)
+function newton(G,y,t0,mu;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=100,status=true)
     t_k = copy(t0)
     tprev = copy(t0)
     increment = norm(t0)
@@ -10,8 +10,9 @@ function newton(G,y,t0,mu;α=0.001,numofiter = 100,tol=0.001, method="exact",nre
         vec_k = 1.0 .- (y ./ exp.(t_k)) + ((L*t_k)./(mu .* exp.(t_k)))
         q =  (mu .* exp.(t_k))
         tprev = copy(t_k)
-        println("Iteration $k, increment $increment")
-
+        if(status == true)
+            println("Iteration $k, increment $increment")
+        end
         if (method=="exact")
             t_k -= α*(smooth(G,q,vec_k))
         else
@@ -30,7 +31,7 @@ function newton(G,y,t0,mu;α=0.001,numofiter = 100,tol=0.001, method="exact",nre
     return exp.(t_k)
 end
 
-function irls(G,y,z0,mu;numofiter = 100,tol=0.001, method="exact",nrep=100)
+function irls(G,y,z0,mu;numofiter = 100,tol=0.001, method="exact",nrep=100,status=true)
     B = incidence_matrix(G,oriented=true)
     k = 0
     increment = norm(z0)
@@ -41,7 +42,9 @@ function irls(G,y,z0,mu;numofiter = 100,tol=0.001, method="exact",nrep=100)
         update =(abs.(B'*z_k) .+ 0.0001).^(-1)
         M_k = spdiagm(0 => (update))
 
-        println("Iteration $k ,Increment: $increment. ")
+        if(status == true)
+            println("Iteration $k, increment $increment")
+        end
 
         L_k = B*M_k*(B')
         L_k[diagind(L_k)] .= 0

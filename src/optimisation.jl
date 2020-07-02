@@ -27,7 +27,7 @@ function newton(G,y,t0,mu;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=
         k += 1
         increment = norm(tprev - t_k)
     end
-    println("Method: $method. Terminated after $k iterations, increment $increment")
+    println("Method: $method. Terminated after $k iterations, |zk-zk+1| increment $increment")
     return exp.(t_k)
 end
 

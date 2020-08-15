@@ -42,7 +42,6 @@ function laplacian_matrix(g :: SimpleGraph)
     A = adjacency_matrix(g)
     s = degree(g)
     D = spdiagm(0 => s[:])
-    println("here")
     return D - A
 end
 

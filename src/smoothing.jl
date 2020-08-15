@@ -42,6 +42,7 @@ function laplacian_matrix(g :: SimpleGraph)
     A = adjacency_matrix(g)
     s = degree(g)
     D = spdiagm(0 => s[:])
+    println("here")
     return D - A
 end
 
@@ -108,7 +109,7 @@ smooth(g,10.1,y)
 function smooth(g :: AbstractGraph{T},q :: Vector,Y ) where T
     L=laplacian_matrix(g)
     Q = diagm(0=>q)
-    println("here")
+
     (L+Q)\(Q*Y)
 end
 

@@ -9,7 +9,7 @@ nv,ne,outneighbors,is_directed,inneighbors
 
 include("./alias.jl")
 
-export random_forest,smooth,smooth_rf,smooth_rf_adapt,smooth_rf_missing,RandomForest,
+export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
       SimpleDiGraph,nroots,next,Partition,PreprocessedWeightedGraph,newton,irls
 export reduced_graph,smooth_ms
 export self_roots

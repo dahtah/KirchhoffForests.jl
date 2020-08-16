@@ -31,8 +31,8 @@ xbar = zeros(size(im))
 y = im_noisy
 z0 = (rand(nv(G)))
 
-x = ((newton(G,y,z0,0.01;α=0.05,numofiter = 100,tol=0.001, method="exact")))
-xtilde = ((newton(G,y,z0,0.01;α=0.05,numofiter = 100,tol=0.001, method="xtilde",nrep=20)))
-xbar = ((newton(G,y,z0,0.01;α=0.05,numofiter = 100,tol=0.001, method="xbar",nrep=20)))
+x = ((newton(G,y,z0,0.025;numofiter = 100,tol=0.001, method="exact")))
+xtilde = ((newton(G,y,z0,0.025;numofiter = 100,tol=0.001, method="xtilde",nrep=20)))
+xbar = ((newton(G,y,z0,0.025;numofiter = 100,tol=0.001, method="xbar",nrep=20)))
 
 Gray.([reshape(y./256,nx,ny) reshape(x./256,nx,ny) reshape(xtilde./256,nx,ny) reshape(xbar./256,nx,ny)])

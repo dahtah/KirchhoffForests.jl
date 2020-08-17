@@ -77,7 +77,7 @@ end
 
 
 
-function smooth(G :: AbstractGraph{T},q,Y ) where T
+function smooth(G :: AbstractGraph{T},q :: Float64,Y ) where T
     L=laplacian_matrix(G)
     q*((L+q*I)\Y)
 end
@@ -107,7 +107,7 @@ smooth(g,10.1,y)
 """
 function smooth(g :: AbstractGraph{T},q :: Vector,Y ) where T
     L=laplacian_matrix(g)
-    Q = diagm(0=>q)
+    Q = diagm(0=>q
     (L+Q)\(Q*Y)
 end
 
@@ -173,81 +173,81 @@ function smooth_rf(g :: AbstractGraph,q :: Vector,Y,rootset=[];nrep=10,variant=1
     (est=xhat,nroots=nr/nrep)
 end
 
-function smooth_rf_missing(g :: AbstractGraph,q :: AbstractVector,Y,rootset=[];nrep=10,variant=1,mean_correction=false)
-    # Computes the solution by deleting trees with missing values
-    # This function outputs a "biased" solution
-    xhat = zeros(size(Y));
-    valid_rep = zeros(size(Y));
-
-
-    nr = 0;
-    Ym = 0;
-    missingIdx = isequal.(Y,missing)
-
-    Yzero_filled = copy(Y)
-    Yzero_filled[missingIdx] .= 0
-    Yzero_filled_q = Diagonal(q)*Yzero_filled
-
-    q_zerofilled = Array(repeat(q',size(Y,2))')
-    q_zerofilled[missingIdx] .= 0
-
-    for indr in Base.OneTo(nrep)
-        rf = random_forest(g,q,rootset)
-        nr += rf.nroots
-        if variant==1
-            xtemp = (rf*Y)
-            valid_rep += (1 .- (isequal.( xtemp, missing)))
-            xtemp[isequal.( xtemp, missing)] .= 0
-            xhat += xtemp
-        elseif variant==2
-            m = Partition(rf)*q_zerofilled
-            xtemp = Partition(rf)*Yzero_filled_q./m
-            valid_rep += (1 .- (isequal.( xtemp, NaN)))
-            xtemp[isequal.( xtemp, NaN)] .= 0
-            xhat += xtemp
-        end
-    end
-    xhat ./= valid_rep
-    (est=xhat,nroots=nr/nrep)
-end
-
-function smooth_rf_missing(g :: AbstractGraph,q :: Float64,Y,rootset=[];nrep=10,variant=1,mean_correction=false)
-    # Computes the solution by deleting trees with missing values
-    # This function outputs a "biased" solution
-
-    xhat = zeros(size(Y));
-    valid_rep = zeros(size(Y));
-
-    nr = 0;
-    Ym = 0;
-    missingIdx = isequal.(Y,missing)
-
-    Yzero_filled = copy(Y)
-    Yzero_filled[missingIdx] .= 0
-    Yzero_filled_q = q .* Yzero_filled
-
-    q_zerofilled = ones(size(Y))
-    q_zerofilled[missingIdx] .= 0
-
-    for indr in Base.OneTo(nrep)
-        rf = random_forest(g,q,rootset)
-        nr += rf.nroots
-        if variant==1
-            xtemp = (rf*Y)
-            valid_rep += (1 .- (isequal.( xtemp, missing)))
-            xtemp[isequal.( xtemp, missing)] .= 0
-            xhat += xtemp
-        elseif variant==2
-            m = Partition(rf)*q_zerofilled
-            xtemp = Partition(rf)*Yzero_filled_q./m
-            valid_rep += (1 .- (isequal.( xtemp, NaN)))
-            xtemp[isequal.( xtemp, NaN)] .= 0
-            xhat += xtemp
-        end
-    end
-    xhat ./= valid_rep
-    (est=xhat,nroots=nr/nrep)
-end
+# function smooth_rf_missing(g :: AbstractGraph,q :: AbstractVector,Y,rootset=[];nrep=10,variant=1,mean_correction=false)
+#     # Computes the solution by deleting trees with missing values
+#     # This function outputs a "biased" solution
+#     xhat = zeros(size(Y));
+#     valid_rep = zeros(size(Y));
+#
+#
+#     nr = 0;
+#     Ym = 0;
+#     missingIdx = isequal.(Y,missing)
+#
+#     Yzero_filled = copy(Y)
+#     Yzero_filled[missingIdx] .= 0
+#     Yzero_filled_q = Diagonal(q)*Yzero_filled
+#
+#     q_zerofilled = Array(repeat(q',size(Y,2))')
+#     q_zerofilled[missingIdx] .= 0
+#
+#     for indr in Base.OneTo(nrep)
+#         rf = random_forest(g,q,rootset)
+#         nr += rf.nroots
+#         if variant==1
+#             xtemp = (rf*Y)
+#             valid_rep += (1 .- (isequal.( xtemp, missing)))
+#             xtemp[isequal.( xtemp, missing)] .= 0
+#             xhat += xtemp
+#         elseif variant==2
+#             m = Partition(rf)*q_zerofilled
+#             xtemp = Partition(rf)*Yzero_filled_q./m
+#             valid_rep += (1 .- (isequal.( xtemp, NaN)))
+#             xtemp[isequal.( xtemp, NaN)] .= 0
+#             xhat += xtemp
+#         end
+#     end
+#     xhat ./= valid_rep
+#     (est=xhat,nroots=nr/nrep)
+# end
+#
+# function smooth_rf_missing(g :: AbstractGraph,q :: Float64,Y,rootset=[];nrep=10,variant=1,mean_correction=false)
+#     # Computes the solution by deleting trees with missing values
+#     # This function outputs a "biased" solution
+#
+#     xhat = zeros(size(Y));
+#     valid_rep = zeros(size(Y));
+#
+#     nr = 0;
+#     Ym = 0;
+#     missingIdx = isequal.(Y,missing)
+#
+#     Yzero_filled = copy(Y)
+#     Yzero_filled[missingIdx] .= 0
+#     Yzero_filled_q = q .* Yzero_filled
+#
+#     q_zerofilled = ones(size(Y))
+#     q_zerofilled[missingIdx] .= 0
+#
+#     for indr in Base.OneTo(nrep)
+#         rf = random_forest(g,q,rootset)
+#         nr += rf.nroots
+#         if variant==1
+#             xtemp = (rf*Y)
+#             valid_rep += (1 .- (isequal.( xtemp, missing)))
+#             xtemp[isequal.( xtemp, missing)] .= 0
+#             xhat += xtemp
+#         elseif variant==2
+#             m = Partition(rf)*q_zerofilled
+#             xtemp = Partition(rf)*Yzero_filled_q./m
+#             valid_rep += (1 .- (isequal.( xtemp, NaN)))
+#             xtemp[isequal.( xtemp, NaN)] .= 0
+#             xhat += xtemp
+#         end
+#     end
+#     xhat ./= valid_rep
+#     (est=xhat,nroots=nr/nrep)
+# end
 
 
 """

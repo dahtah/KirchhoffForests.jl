@@ -1,8 +1,9 @@
-
-function newton(G,y,t0,mu;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=100,status=true,line_search=true)
+function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=100,status=true,line_search=true)
     t_k = copy(t0)
     tprev = copy(t0)
     increment = norm(t0)
+    inc_arr = []
+    psnr_arr = []
     L = laplacian_matrix(G)
     k = 0
 
@@ -30,10 +31,14 @@ function newton(G,y,t0,mu;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=
         end
         t_k -= α*update
         k += 1
+
         increment = norm(tprev - t_k)
+        inc_arr.append(increment)
+        psnr = (ImageQualityIndexes.assess_psnr(t_k, image))
+        psnr_arr.append(psnr)
     end
     println("Method: $method. Terminated after $k iterations, increment $increment")
-    return exp.(t_k)
+    return exp.(t_k),inc_arr,psnr_arr
 end
 function approximatelinesearch(y,t_k,mu,L,update;β=0.5)
     α = 1.0

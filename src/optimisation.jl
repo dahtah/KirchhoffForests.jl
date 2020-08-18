@@ -34,9 +34,9 @@ function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact"
         k += 1
 
         increment = norm(tprev - t_k)
-        inc_arr.append(increment)
+        append!(inc_arr,increment)
         psnr = (ImageQualityIndexes.assess_psnr(exp.(t_k)/res, image/res))
-        psnr_arr.append(psnr)
+        append!(psnr_arr,psnr)
     end
     println("Method: $method. Terminated after $k iterations, increment $increment")
     return exp.(t_k),inc_arr,psnr_arr

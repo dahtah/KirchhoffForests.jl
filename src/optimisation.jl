@@ -1,4 +1,5 @@
-function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=100,status=true,line_search=true)
+using ImageQualityIndexes
+function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=100,res=255,status=true,line_search=true)
     t_k = copy(t0)
     tprev = copy(t0)
     increment = norm(t0)
@@ -34,7 +35,7 @@ function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact"
 
         increment = norm(tprev - t_k)
         inc_arr.append(increment)
-        psnr = (ImageQualityIndexes.assess_psnr(t_k, image))
+        psnr = (ImageQualityIndexes.assess_psnr(t_k/res, image/res))
         psnr_arr.append(psnr)
     end
     println("Method: $method. Terminated after $k iterations, increment $increment")

@@ -107,7 +107,7 @@ smooth(g,10.1,y)
 """
 function smooth(g :: AbstractGraph{T},q :: Vector,Y ) where T
     L=laplacian_matrix(g)
-    Q = diagm(0=>q
+    Q = diagm(0=>q)
     (L+Q)\(Q*Y)
 end
 

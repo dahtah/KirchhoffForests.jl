@@ -1,3 +1,27 @@
+
+function approximatelinesearch(y,t_k,mu,L,update;β=0.5)
+    α = 1.0
+    lossgrad = mu*exp.(t_k) .- mu*y + (L*t_k)
+    while ( newton_loss(y,t_k-α*update,mu,L) >  newton_loss(y,t_k,mu,L) .- 0.5*α*lossgrad'*update )
+        α = β*α;
+    end
+    return α
+end
+function newton_loss(y,t_k,mu,L)
+    return -mu*(y'*t_k - sum(exp.(t_k)) .- sum(logfact.(y)) ) .+ 0.5*(t_k'*L*t_k)
+end
+function psnr(im,ref,peak)
+    MSE = mean((im .- ref).^2)
+    return 20*log10.(peak) - 10*log10.(MSE)
+end
+function logfact(y)
+    res = 0
+    for i = 1 : y
+        res += log(i)
+    end
+    res
+end
+
 function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=100,peak=255,status=true,line_search=true)
     t_k = copy(t0)
     tprev = copy(t0)
@@ -35,8 +59,8 @@ function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact"
 
         increment = norm(tprev - t_k)
         append!(inc_arr,increment)
-        psnr = psnr(exp.(t_k), image,peak)
-        append!(psnr_arr,psnr)
+        psnr_k = psnr(exp.(t_k), image,peak)
+        append!(psnr_arr,psnr_k)
         loss = newton_loss(y,t_k,mu,L)
         append!(loss_arr,loss)
 
@@ -44,30 +68,7 @@ function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact"
     println("Method: $method. Terminated after $k iterations, increment $increment")
     return exp.(t_k),inc_arr,psnr_arr,loss_arr
 end
-function approximatelinesearch(y,t_k,mu,L,update;β=0.5)
-    α = 1.0
-    lossgrad = mu*exp.(t_k) .- mu*y + (L*t_k)
-    while ( newton_loss(y,t_k-α*update,mu,L) >  newton_loss(y,t_k,mu,L) .- 0.5*α*lossgrad'*update )
-        α = β*α;
-    end
-    return α
-end
-function newton_loss(y,t_k,mu,L)
-    return -mu*(y'*t_k - sum(exp.(t_k)) .- sum(logfact.(y)) ) .+ 0.5*(t_k'*L*t_k)
-end
-function psnr(im,ref,peak)
-    MSE = mean((im .- ref).^2)
-    return 20*log10.(peak) - 10*log10.(MSE)
-end
 
-
-function logfact(y)
-    res = 0
-    for i = 1 : y
-        res += log(i)
-    end
-    res
-end
 function irls(G,y,z0,mu;numofiter = 100,tol=0.001, method="exact",nrep=100,status=true)
     B = incidence_matrix(G,oriented=true)
     k = 0

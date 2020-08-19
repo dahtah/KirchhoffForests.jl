@@ -1,10 +1,10 @@
-using ImageQualityIndexes
-function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=100,res=255,status=true,line_search=true)
+function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=100,peak=255,status=true,line_search=true)
     t_k = copy(t0)
     tprev = copy(t0)
     increment = norm(t0)
     inc_arr = []
     psnr_arr = []
+    loss_arr = []
     L = laplacian_matrix(G)
     k = 0
 
@@ -35,11 +35,14 @@ function newton(G,y,t0,mu,image;α=0.1,numofiter = 100,tol=0.001, method="exact"
 
         increment = norm(tprev - t_k)
         append!(inc_arr,increment)
-        psnr = (ImageQualityIndexes.assess_psnr(exp.(t_k)/res, image/res))
+        psnr = psnr(exp.(t_k), image,peak)
         append!(psnr_arr,psnr)
+        loss = newton_loss(y,t_k,mu,L)
+        append!(loss_arr,loss)
+
     end
     println("Method: $method. Terminated after $k iterations, increment $increment")
-    return exp.(t_k),inc_arr,psnr_arr
+    return exp.(t_k),inc_arr,psnr_arr,loss_arr
 end
 function approximatelinesearch(y,t_k,mu,L,update;β=0.5)
     α = 1.0
@@ -52,6 +55,11 @@ end
 function newton_loss(y,t_k,mu,L)
     return -mu*(y'*t_k - sum(exp.(t_k)) .- sum(logfact.(y)) ) .+ 0.5*(t_k'*L*t_k)
 end
+function psnr(im,ref,peak)
+    MSE = mean((im .- ref).^2)
+    return 20*log10.(peak) - 10*log10.(MSE)
+end
+
 
 function logfact(y)
     res = 0

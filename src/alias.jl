@@ -65,8 +65,8 @@ function alias_preprocess(g :: SimpleWeightedGraph)
                 Kvec[i] = i
             end
         end
-        K[nhbrs,k] = nhbrs[Kvec]
-        U[nhbrs,k] = Uvec
+        K[nhbrs,k] .= nhbrs[Kvec]
+        U[nhbrs,k] .= Uvec
     end
     K,U
 end

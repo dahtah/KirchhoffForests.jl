@@ -7,10 +7,11 @@ import SimpleWeightedGraphs.AbstractSimpleWeightedGraph
 import LightGraphs:
 nv,ne,outneighbors,is_directed,inneighbors
 
-include("./alias.jl")
 
 export random_forest,smooth,smooth_rf,smooth_rf_adapt,RandomForest,
-      SimpleDiGraph,nroots,next,Partition,PreprocessedWeightedGraph,newton,irls
+      SimpleDiGraph,nroots,next,Partition,PreprocessedWeightedGraph
+export newton,irls,SURE
+
 export reduced_graph,smooth_ms
 export self_roots
 export random_successor
@@ -316,9 +317,9 @@ include("random_spanning_tree.jl")
 include("smoothing.jl")
 include("moments.jl")
 include("multiscale.jl")
-
-
-include("./optimisation.jl")
+include("optimization.jl")
+include("paramselection.jl")
+include("alias.jl")
 
 # function smooth_rf(G :: SimpleGraph{T},q,y :: Vector;nrep=10,variant=1) where T
 #     xhat = zeros(Float64,length(y));

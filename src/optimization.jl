@@ -10,10 +10,7 @@ end
 function newton_loss(y,t_k,mu,L)
     return -mu*(y'*t_k - sum(exp.(t_k)) .- sum(logfact.(y)) ) .+ 0.5*(t_k'*L*t_k)
 end
-# function psnr(im,ref,peak)
-#     MSE = mean((im .- ref).^2)
-#     return 20*log10.(peak) - 10*log10.(MSE)
-# end
+
 function logfact(y)
     res = 0
     for i = 1 : y

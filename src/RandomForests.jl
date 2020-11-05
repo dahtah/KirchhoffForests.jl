@@ -321,53 +321,5 @@ include("optimization.jl")
 include("paramselection.jl")
 include("alias.jl")
 
-# function smooth_rf(G :: SimpleGraph{T},q,y :: Vector;nrep=10,variant=1) where T
-#     xhat = zeros(Float64,length(y));
-#     nr = 0;
-#     for indr in Base.OneTo(nrep)
-#         rf = random_forest(G,q)
-#         nr += rf.nroots
-#         if variant==1
-#             xhat += y[rf.root]
-#         elseif variant==2
-#             xhat += avg_rf(rf.root,y)
-#         end
-#     end
-#     (est=xhat ./ nrep,nroots=nr/nrep)
-# end
-
-
-
-# function sum_by(v :: Array{T,1}, g :: Array{Int64,1}) where T
-#     cc = spzeros(Int64,length(v))
-#     vv = spzeros(Float64,length(v))
-#     for i in 1:length(v)
-#         vv[g[i]] += v[i]
-#         cc[g[i]] += 1
-#     end
-#     nz = findnz(vv)
-#     for i in nz[1]
-#         vv[i] /= cc[i]
-#     end
-#     vv
-# end
-
-# function sum_by(v :: Array{T,2}, g :: Array{Int64,1}) where T
-#     cc = spzeros(Int64,length(v))
-#     vv = spzeros(Float64,size(v,1),size(v,2))
-#     for i in 1:size(v,1)
-# #        @show size(vv[g[i],:]),size(v[i,:])
-#         vv[g[i],:] += v[i,:]
-#         cc[g[i]] += 1
-#     end
-#     nz = findnz(cc)
-#     for i in nz[1]
-#         vv[i,:] /= cc[i]
-#     end
-#     vv
-# end
-
-
-
 
 end # module

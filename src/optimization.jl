@@ -45,7 +45,11 @@ function newton(G,y,t0,mu;α=0.1,numofiter = 100,tol=0.001, method="exact",nrep=
             end
         end
         if(status == true)
+<<<<<<< HEAD
             println("Iteration=$k, ||t_k - t_{k+1}||^2=$increment, alpha=$α")
+=======
+            println("Iteration $k, ||t_k - t_{k+1}||^2 $increment, alpha $α")
+>>>>>>> e4b0dff331648cd49dd72472e35de28b8cb0a46f
         end
 
         if(line_search == true)

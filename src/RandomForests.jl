@@ -111,7 +111,7 @@ function random_forest(G::AbstractGraph,q::AbstractFloat)
         while !in_tree[u]
             if (((q+d[u]))*rand() < q)
                 in_tree[u] = true
-                push!(roots,u)
+                # push!(roots,u)
                 nroots+=1
                 root[u] = u
                 next[u] = 0
@@ -145,7 +145,7 @@ function random_forest(G::AbstractGraph,q::AbstractFloat,B::AbstractVector)
         while !in_tree[u]
             if ((((q+d[u]))*rand() < q) || u in B)
                 in_tree[u] = true
-                push!(roots,u)
+#                 push!(roots,u)
                 nroots+=1
                 root[u] = u
                 next[u] = 0
@@ -183,7 +183,7 @@ function random_forest(G::AbstractGraph,q::AbstractVector)
         while !in_tree[u]
             if (rand() < q[u]/(q[u]+degree(G,u)))
                 in_tree[u] = true
-                push!(roots,u)
+#                 push!(roots,u)
                 nroots+=1
                 root[u] = u
                 next[u] = 0
@@ -202,7 +202,7 @@ function random_forest(G::AbstractGraph,q::AbstractVector)
             u = next[u]
         end
     end
-    RandomForest(next,roots,nroots,root)
+     RandomForest(next,roots,nroots,root)
 end
 
 function random_forest(G::AbstractGraph,q::AbstractVector,B::AbstractVector)
@@ -221,7 +221,7 @@ function random_forest(G::AbstractGraph,q::AbstractVector,B::AbstractVector)
         while !in_tree[u]
             if ((rand() < q[u]/(q[u]+degree(G,u))) || (u in B))
                 in_tree[u] = true
-                push!(roots,u)
+#                 push!(roots,u)
                 nroots+=1
                 root[u] = u
                 next[u] = 0

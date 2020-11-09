@@ -243,7 +243,7 @@ function random_forest(G::AbstractGraph,q::AbstractVector,B::AbstractVector)
             u = next[u]
         end
     end
-    roots = (findall(root .== 1:nv(G)))
+    roots =(findall(root .== 1:nv(G)))
     RandomForest(next,roots,nroots,root)
 end
 

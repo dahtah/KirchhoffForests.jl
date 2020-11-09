@@ -134,10 +134,9 @@ function smooth_rf(g :: AbstractGraph,q :: Float64,Y,rootset=[];nrep=10,variant=
     for indr in Base.OneTo(nrep)
         rf = random_forest(g,q,rootset)
         nr += rf.nroots
-        roots =[i for i in rf.roots]
         if variant==1
             xhat += rf*Y
-            diagK[roots] .+= 1
+            diagK[rf.roots] .+= 1
         elseif variant==2
             xhat += Partition(rf)*Y
             diagK += diag(Partition(rf))
@@ -162,10 +161,9 @@ function smooth_rf(g :: AbstractGraph,q :: Vector,Y,rootset=[];nrep=10,variant=1
     for indr in Base.OneTo(nrep)
         rf = random_forest(g,q,rootset)
         nr += rf.nroots
-        roots =[i for i in rf.roots]
         if variant==1
             xhat += rf*Y
-            diagK[roots] .+= 1
+            diagK[rf.roots] .+= 1
         elseif variant==2
             m = Partition(rf)*q
             xhat += Partition(rf)*Yq ./ m

@@ -324,6 +324,6 @@ include("multiscale.jl")
 include("optimization.jl")
 include("paramselection.jl")
 include("alias.jl")
-
+include("agg_clust.jl")
 
 end # module

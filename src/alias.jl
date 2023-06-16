@@ -1,5 +1,5 @@
 
-using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
+using Graphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
 using RandomForests
 
 export alias_preprocess

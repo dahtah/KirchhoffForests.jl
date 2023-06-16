@@ -1,4 +1,4 @@
-using BenchmarkTools,SimpleWeightedGraphs,LightGraphs,RandomForests
+using BenchmarkTools,SimpleWeightedGraphs,Graphs,RandomForests
 
 g = grid([50,50])
 # g = erdos_renyi(400,0.1)

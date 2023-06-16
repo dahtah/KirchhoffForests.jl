@@ -9,7 +9,7 @@ We are interested in a specific way of generating random *spanning* forests in a
 graph, because of its deep ties to the graph Laplacian. 
 
 ```@setup 1
-using LightGraphs,TikzPictures,TikzGraphs
+using Graphs,TikzPictures,TikzGraphs
 g = grid([2,2])
 add_vertex!(g)
 add_edge!(g,4,5)

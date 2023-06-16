@@ -1,10 +1,10 @@
 module RandomForests
-using LightGraphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
+using Graphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs
 import StatsBase.denserank,Statistics.mean,Base.show,Base.sum,
 StatsBase.counts
-import LightGraphs.SimpleDiGraph,LightGraphs.nv,LightGraphs.ne,LightGraphs.degree,LightGraphs.outneighbors
+import Graphs.SimpleDiGraph,Graphs.nv,Graphs.ne,Graphs.degree,Graphs.outneighbors
 import SimpleWeightedGraphs.AbstractSimpleWeightedGraph
-import LightGraphs:
+import Graphs:
 nv,ne,outneighbors,is_directed,inneighbors
 
 include("./alias.jl")
@@ -34,7 +34,7 @@ function PreprocessedWeightedGraph(adjmx::SparseMatrixCSC{U,T}) where T <: Integ
     K,P= alias_preprocess(SimpleWeightedGraph(adjmx))
     PreprocessedWeightedGraph{T, U}(adjmx,K,P)
 end
-PreprocessedWeightedGraph(g::LightGraphs.SimpleGraphs.SimpleGraph{T}, ::Type{U}=Float64) where T <: Integer where U <: Real =
+PreprocessedWeightedGraph(g::Graphs.SimpleGraphs.SimpleGraph{T}, ::Type{U}=Float64) where T <: Integer where U <: Real =
     PreprocessedWeightedGraph(adjacency_matrix(g, U))
 PreprocessedWeightedGraph(g::SimpleWeightedGraph)= PreprocessedWeightedGraph(g.weights)
 inneighbors(g::PreprocessedWeightedGraph, v::Integer) = g.weights[v,:].nzind
@@ -87,7 +87,7 @@ degree d[i]. If q is a vector, it equals q[i]/(q[i]+d[i]).
 # Example
 
 ```
-using LightGraphs
+using Graphs
 G = grid([3,3])
 random_forest(G,.4)
 q_varying = rand(nv(G))

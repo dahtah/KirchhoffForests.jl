@@ -1,4 +1,4 @@
-using DelimitedFiles,LightGraphs
+using DelimitedFiles,Graphs
 using Statistics
 
 function load_citeseer()

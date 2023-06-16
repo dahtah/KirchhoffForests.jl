@@ -1,4 +1,4 @@
-using RandomForests,LightGraphs,SimpleWeightedGraphs
+using RandomForests,Graphs,SimpleWeightedGraphs
 using Test
 using LinearAlgebra
 

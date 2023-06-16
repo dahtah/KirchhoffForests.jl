@@ -24,7 +24,7 @@ julia> g = cycle_graph(4)
 {4, 4} undirected simple Int64 graph
 
 julia> random_spanning_tree(g).tree |> edges |> collect
-3-element Array{LightGraphs.SimpleGraphs.SimpleEdge{Int64},1}:
+3-element Array{Graphs.SimpleGraphs.SimpleEdge{Int64},1}:
  Edge 2 => 3
  Edge 3 => 4
  Edge 4 => 1

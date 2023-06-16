@@ -42,9 +42,13 @@ is_directed(::Type{PreprocessedWeightedGraph}) = false
 is_directed(::Type{PreprocessedWeightedGraph{T, U}}) where T where U = false
 is_directed(g::PreprocessedWeightedGraph) = false
 ne(g::PreprocessedWeightedGraph) = nnz(g.weights)/2
+nv(g::PreprocessedWeightedGraph) = size(g.weights,1)
 degree(g::PreprocessedWeightedGraph) = sum(g.weights,dims=1)
 degree(g::SimpleWeightedGraph) = sum(g.weights,dims=1)
 
+function show(io::IO, g::PreprocessedWeightedGraph)
+    println(io, "Preprocessed Weighted Graph with $(nv(g)) vertices and $(ne(g)) edges.")
+end
 
 function show(io::IO, rf::RandomForest)
     println(io, "Random forest. Size of original graph $(nv(rf)).")

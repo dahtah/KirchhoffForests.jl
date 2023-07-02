@@ -1,5 +1,5 @@
 module RandomForests
-using Graphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs,RecipesBase
+using Graphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs,PyPlot#RecipesBase
 import StatsBase.denserank,Statistics.mean,Base.show,Base.sum,
 StatsBase.counts, StatsBase.quantile, Distributions.Normal
 import Random.MersenneTwister,Random.rand!
@@ -357,6 +357,7 @@ include("multiscale.jl")
 include("optimization.jl")
 include("paramselection.jl")
 include("efficient_smoothing.jl")
-include("plotting_recipe.jl")
+# include("plotting_recipe.jl")
+include("plotting.jl")
 include("trace.jl")
 end # module

@@ -20,7 +20,7 @@ plot(graphplotobj)
 savefig("ex_graph.svg")
 
 rt = random_spanning_tree(g)
-treeplotobj = RFGraphPlot(rt.tree,xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,:viridis,false,"","")
+treeplotobj = RFGraphPlot(rt.tree,xloc,yloc,[(i == rt.root) for i = 1:nv(g)],15,3,:viridis,false,"","")
 plot(treeplotobj)
 savefig("ex_tree.svg")
 
@@ -33,7 +33,9 @@ savefig("ex_forest.svg")
 ```
 
 ```@setup 2
-using Graphs,RandomForests,PyPlot,Random
+using Graphs,RandomForests,Plots,Random
+pyplot()
+
 g = Graphs.grid([4,4])
 p = Iterators.product(0.0:0.1:0.3, 0.0:0.1:0.3);
 xloc = zeros(nv(g))
@@ -65,7 +67,9 @@ savefig("q=5.0.svg")
 ```
 
 ```@setup 3
-using Graphs,RandomForests,Plots,Random
+using Graphs,Plots,RandomForests,Random
+pyplot()
+ 
 g = Graphs.grid([4,4])
 p = Iterators.product(0.0:0.1:0.3, 0.0:0.1:0.3);
 xloc = zeros(nv(g))

@@ -30,7 +30,7 @@ end
                 j = e.dst
                 x = [xloc[i]]
                 y = [yloc[i]]
-                arrow -->  arrow(:closed,:tail,1, 1)
+                
                 quiver --> (0.9*[xloc[j]-xloc[i]],0.9*[yloc[j]-yloc[i]])
                 x,y
             end

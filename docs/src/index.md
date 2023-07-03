@@ -45,6 +45,7 @@ for (x,y) in p
   yloc[i] = y  
 end
 
+rng = MersenneTwister(12)
 rf = random_forest(g,0.1,rng)
 forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,:viridis,false,"","")
 plot(forestplotobj)

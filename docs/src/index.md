@@ -1,6 +1,8 @@
 
 ```@setup 1
-using Graphs,RandomForests,PyPlot,Random
+using Plots,Graphs,RandomForests,Random
+pyplot()
+
 g = Graphs.grid([4,4])
 p = Iterators.product(0.0:0.1:0.3, 0.0:0.1:0.3);
 xloc = zeros(nv(g))
@@ -11,24 +13,21 @@ for (x,y) in p
   xloc[i] = x
   yloc[i] = y  
 end
-param = PlotParam(xloc,yloc,false,[],500,3,:viridis,false,"","")
-figure()
-plot_graph(g,param=param)
+
+
+graphplotobj = RFGraphPlot(g,xloc,yloc,[],15,3,:viridis,false,"","")
+plot(graphplotobj)
 savefig("ex_graph.svg")
 
-param.showRoots= true
-param.cmap=:viridis
 rt = random_spanning_tree(g)
-figure()
-plot_tree(rt,param=param)
+treeplotobj = RFGraphPlot(rt.tree,xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,:viridis,false,"","")
+plot(treeplotobj)
 savefig("ex_tree.svg")
 
-param.showRoots= true
-param.cmap=:viridis
 rng = MersenneTwister(12)
 rf = random_forest(g,1.0,rng)
-figure()
-plot_forest(rf,param=param)
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,:viridis,false,"","")
+plot(forestplotobj)
 savefig("ex_forest.svg")
 
 ```
@@ -45,28 +44,27 @@ for (x,y) in p
   xloc[i] = x
   yloc[i] = y  
 end
-param = PlotParam(xloc,yloc,true,[],500,3,:viridis,false,"","")
-param.showRoots= true
-param.cmap=:viridis
-rf = random_forest(g,0.1)
-figure()
-plot_forest(rf,param=param)
-savefig("q=0,1.svg")
 
-rf = random_forest(g,1)
-figure()
-plot_forest(rf,param=param)
-savefig("q=1.svg")
+rf = random_forest(g,0.1,rng)
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,:viridis,false,"","")
+plot(forestplotobj)
+savefig("q=0.1.svg")
 
-rf = random_forest(g,5.0)
-figure()
-plot_forest(rf,param=param)
-savefig("q=5.svg")
+rf = random_forest(g,1.0,rng)
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,:viridis,false,"","")
+plot(forestplotobj)
+savefig("q=1.0.svg")
+
+rf = random_forest(g,5.0,rng)
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,:viridis,false,"","")
+plot(forestplotobj)
+savefig("q=5.0.svg")
+
 
 ```
 
 ```@setup 3
-using Graphs,RandomForests,PyPlot,Random
+using Graphs,RandomForests,Plots,Random
 g = Graphs.grid([4,4])
 p = Iterators.product(0.0:0.1:0.3, 0.0:0.1:0.3);
 xloc = zeros(nv(g))
@@ -78,21 +76,18 @@ for (x,y) in p
   yloc[i] = y  
 end
 rng = MersenneTwister(12)
-param = PlotParam(xloc,yloc,false,[],500,3,:viridis,true,"q","")
-param.signal = ones(nv(g))
-param.cmap=:jet
 rf = random_forest(g,1.0,rng)
-figure()
-plot_forest(rf,param=param)
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,repeat([1.0],nv(g)),15,3,:jet,false,"","")
+plot(forestplotobj)
 savefig("quniform.svg")
 
 idx = [1,4,13,16]
-param.signal = 0.02*ones(nv(g))
-param.signal[idx] .= (16-12*0.02)/4
-param.cmap=:jet
-rf = random_forest(g,param.signal,rng)
-figure()
-plot_forest(rf,param=param)
+q = 0.02*ones(nv(g))
+q[idx] .= (16-12*0.02)/4
+rf = random_forest(g,q,rng)
+rf = random_forest(g,1.0,rng)
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,repeat([1.0],nv(g)),15,3,:jet,false,"","")
+plot(forestplotobj)
 savefig("qnonuniform.svg")
 
 ```

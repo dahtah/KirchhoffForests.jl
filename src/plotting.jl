@@ -165,18 +165,3 @@ function plot_forest(rf::RandomForest;param::PlotParam=PlotParam([],[],true,[],2
     title(param.title)
 end
 
-function grid_layout(x,y)
-    xsteps = range(0,0.3,length=x)
-    ysteps = range(0,0.3,length=y)
-    it = Iterators.product(xsteps,ysteps);
-    xloc = zeros(x*y)
-    yloc = zeros(x*y)
-    global i = 0
-    for (x,y) in it
-      global i += 1
-      xloc[i] = x
-      yloc[i] = y
-    end
-    xloc,yloc
-end
-

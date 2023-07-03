@@ -84,7 +84,7 @@ Here are samples of $ \\Phi_q $ for different values of $ q $ :
 
 $ q = 0.1$      |  $ q = 1.0$   | $ q = 5.0$
 :--------------:|:-------------:|:------------:
-![](q=0,1.svg)   |![](q=1.svg)  |![](q=5.svg)
+![](q=0.1.svg)   |![](q=1.svg)  |![](q=5.svg)
 
 In a more generalized form of this distribution, one can consider varying values of $q$ over the vertices. In this case, we define a more generic distribution as follows:
 ```math

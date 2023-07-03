@@ -1,5 +1,5 @@
 module RandomForests
-using Graphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs,PyPlot#RecipesBase
+using Graphs,LinearAlgebra,SparseArrays,SimpleWeightedGraphs,RecipesBase
 import StatsBase.denserank,Statistics.mean,Base.show,Base.sum,
 StatsBase.counts, StatsBase.quantile, Distributions.Normal
 import Random.MersenneTwister,Random.rand!
@@ -18,7 +18,6 @@ export reduced_graph,smooth_ms
 export self_roots
 export random_successor
 export random_spanning_tree
-export plot_graph,plot_tree,plot_forest,PlotParam,grid_layout
 
 export root_boundary_track, partition_boundary_track, trace_estimator
 

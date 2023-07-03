@@ -33,7 +33,7 @@ savefig("ex_forest.svg")
 ```
 
 ```@setup 2
-using Graphs,RandomForests,PyPlot
+using Graphs,RandomForests,PyPlot,Random
 g = Graphs.grid([4,4])
 p = Iterators.product(0.0:0.1:0.3, 0.0:0.1:0.3);
 xloc = zeros(nv(g))

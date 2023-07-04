@@ -1,4 +1,5 @@
-using RandomForests,Graphs,LinearAlgebra,Random,PyPlot
+using RandomForests,Graphs,LinearAlgebra,Random,Plots
+pyplot()
 rng = MersenneTwister(12345); # Set random seed
 g = Graphs.grid([4,4])
 p = 8; n = nv(g); y= rand(rng, p); labelednodes = randperm(rng,n)[1:p]; M=I(n)[:,labelednodes]; # Generate an incomplete signal
@@ -17,58 +18,38 @@ zbar = xbar - α*((L * xbar) ./ Q + xbar  - yprime)
 
 xexact = inv(L+Qdiag)*Qdiag*yprime
 
-xloc,yloc = grid_layout(4,4);
-param = PlotParam(xloc,yloc,false,[],500,3,:viridis,false,"","");
-param.signal = yprime;
-param.colorbar=true;
-param.colorbarlabel=latexstring("{\\mathbf{y}}'");
+p = Iterators.product(0.0:0.1:0.3, 0.0:0.1:0.3);
+xloc = zeros(nv(g))
+yloc = zeros(nv(g))
+global i = 0
+for (x,y) in p
+  global i += 1
+  xloc[i] = x
+  yloc[i] = y  
+end
 
-figure();
-plot_graph(g,param=param);
+gplotobj = RFGraphPlot(g,xloc,yloc,yprime,15,3,:viridis,true,"\$\\mathbf{y}'\$","")
+plot(gplotobj);
 savefig("gtr-graph.svg");
 
-param.showRoots= true;
-param.cmap=:viridis;
-param.colorbar=true;
-param.colorbarlabel="";
-
-figure();
-plot_forest(rf,param=param);
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[i in rf.roots for i = 1:nv(g)],15,3,:viridis,true,"","")
+plot(rfplotobj);
 savefig("gtr-forest.svg");
 
-param.showRoots= false;
-param.cmap=:viridis;
-param.signal = xtilde;
-param.colorbar=true;
-param.colorbarlabel=latexstring("\\tilde{\\mathbf{x}}");
-figure();
-plot_forest(rf,param=param);
+
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xtilde,15,3,:viridis,true,"\$\\tilde{\\mathbf{x}}\$","")
+plot(rfplotobj);
 savefig("gtr-xtilde.svg");
 
-param.showRoots= false;
-param.cmap=:viridis;
-param.signal = xbar;
-param.colorbar=true;
-param.colorbarlabel=latexstring("\\bar{\\mathbf{x}}");
-figure();
-plot_forest(rf,param=param);
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xbar,15,3,:viridis,true,"\$\\bar{\\mathbf{x}}\$","")
+plot(rfplotobj);
 savefig("gtr-xbar.svg");
 
-param.showRoots= false;
-param.cmap=:viridis;
-param.signal = zbar;
-param.colorbar=true;
-param.colorbarlabel=latexstring("\\bar{\\mathbf{z}}");
-figure();
-plot_forest(rf,param=param);
-savefig("gtr-zbar.svg");
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,zbar,15,3,:viridis,true,"\$\\bar{\\mathbf{z}}\$","")
+plot(rfplotobj);
+savefig("gtr-ztilde.svg");
 
 
-param.showRoots= false;
-param.cmap=:viridis;
-param.signal = xexact;
-param.colorbar=true;
-param.colorbarlabel=latexstring("\\hat{\\mathbf{x}}");
-figure();
-plot_graph(g,param=param);
+gplotobj = RFGraphPlot(g,xloc,yloc,xexact,15,3,:viridis,true,"\$\\hat{\\mathbf{x}}\$","")
+plot(gplotobj);
 savefig("gtr-exact.svg");

@@ -1,3 +1,22 @@
+"""
+    mutable struct RFGraphPlot
+        g :: AbstractGraph
+        xloc :: Array{Number}
+        yloc :: Array{Number}
+        signal :: Array{Number}
+        nodeSize :: Number
+        edgeWidth :: Number
+        arrowheadwidth :: Number
+        cmap :: Symbol
+        colorbar :: Bool
+        colorbarlabel :: String 
+        colorbar_titlefontsize :: Number
+        colorbar_tickfontsize :: Number
+        title :: String
+    end
+    
+    A simple struct for a plotting parameters of graphs and spanning trees/forests
+"""
 mutable struct RFGraphPlot
     g :: AbstractGraph
     xloc :: Array{Number}
@@ -68,6 +87,7 @@ end
     colorbar_title --> rfgp.colorbarlabel
     colorbar_titlefontsize --> rfgp.colorbar_titlefontsize
     colorbar_tickfontsize --> rfgp.colorbar_tickfontsize
+    colorbar_direction --> 
     primary := false
     ()
 end

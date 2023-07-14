@@ -14,18 +14,18 @@ for (x,y) in p
   yloc[i] = y  
 end
 
-graphplotobj = RFGraphPlot(g,xloc,yloc,yprime,15,3,10,:viridis,false,"",15,15,"")
+graphplotobj = RFGraphPlot(g,xloc,yloc,repeat([1.0],nv(g)),15,3,10,:viridis,false,"",15,15,"")
 plot(graphplotobj)
 savefig("ex_graph.svg")
 
 rt = random_spanning_tree(g)
-treeplotobj = RFGraphPlot(rt.tree,xloc,yloc,[(i == rt.root) for i = 1:nv(g)],25,3,:viridis,false,"","")
+treeplotobj = RFGraphPlot(rt.tree,xloc,yloc,[(i == rt.root) for i = 1:nv(g)],15,3,1.2,:viridis,false,"",15,15,"")
 plot(treeplotobj)
 savefig("ex_tree.svg")
 
 rng = MersenneTwister(12)
 rf = random_forest(g,1.0,rng)
-forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],25,3,:viridis,false,"","")
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,1.2,:viridis,false,"",15,15,"")
 plot(forestplotobj)
 savefig("ex_forest.svg")
 
@@ -48,17 +48,17 @@ end
 
 rng = MersenneTwister(12)
 rf = random_forest(g,0.1,rng)
-forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],25,3,:viridis,false,"","")
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,1.2,:viridis,false,"",15,15,"")
 plot(forestplotobj)
 savefig("q=0.1.svg")
 
 rf = random_forest(g,1.0,rng)
-forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],25,3,:viridis,false,"","")
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,1.2,:viridis,false,"",15,15,"")
 plot(forestplotobj)
 savefig("q=1.0.svg")
 
 rf = random_forest(g,5.0,rng)
-forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],25,3,:viridis,false,"","")
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[(i in rf.roots) for i = 1:nv(g)],15,3,1.2,:viridis,false,"",15,15,"")
 plot(forestplotobj)
 savefig("q=5.0.svg")
 
@@ -81,7 +81,7 @@ for (x,y) in p
 end
 rng = MersenneTwister(12)
 rf = random_forest(g,1.0,rng)
-forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,repeat([1.0],nv(g)),25,3,:jet,false,"","")
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,repeat([1.0],nv(g)),15,3,1.2,:jet,false,"",15,15,"")
 plot(forestplotobj)
 savefig("quniform.svg")
 
@@ -89,7 +89,7 @@ idx = [1,4,13,16]
 q = 0.02*ones(nv(g))
 q[idx] .= (16-12*0.02)/4
 rf = random_forest(g,q,rng)
-forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,q,25,3,:jet,false,"","")
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,q,15,3,1.2,:jet,false,"",15,15,"")
 plot(forestplotobj)
 savefig("qnonuniform.svg")
 

@@ -9,6 +9,8 @@ mutable struct RFGraphPlot
     cmap :: Symbol
     colorbar :: Bool
     colorbarlabel :: String 
+    colorbar_titlesize :: Number
+    colorbar_tickfontsize :: Number
     title :: String
 end
 @recipe function f(rfgp::RFGraphPlot)
@@ -32,7 +34,7 @@ end
                 x = [xloc[i]]
                 y = [yloc[i]]
                 linewidth --> rfgp.edgeWidth
-                headwidth --> rfgp.arrowheadwidth 
+                arrow --> rfgp.arrowheadwidth 
                 quiver --> (0.9*[xloc[j]-xloc[i]],0.9*[yloc[j]-yloc[i]])
                 x,y
             end
@@ -64,6 +66,8 @@ end
     end
     colorbar --> rfgp.colorbar
     colorbar_title --> rfgp.colorbarlabel
+    colorbar_titlesize --> rfgp.colorbar_titlesize
+    colorbar_tickfontsize --> rfgp.colorbar_tickfontsize
     primary := false
     ()
 end

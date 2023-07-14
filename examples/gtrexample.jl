@@ -32,7 +32,7 @@ gplotobj = RFGraphPlot(g,xloc,yloc,yprime,15,3,10,:viridis,true,"\$\\mathbf{y}'\
 plot(gplotobj)
 savefig("gtr-graph.svg");
 
-rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[i in rf.roots for i = 1:nv(g)],15,5,30,:viridis,true,"","")
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[i in rf.roots for i = 1:nv(g)],15,5,50,:viridis,true,"","")
 plot(rfplotobj);
 savefig("gtr-forest.svg");
 

@@ -5,6 +5,7 @@ mutable struct RFGraphPlot
     signal :: Array{Number}
     nodeSize :: Number
     edgeWidth :: Number
+    arrowheadwidth :: Number
     cmap :: Symbol
     colorbar :: Bool
     colorbarlabel :: String 
@@ -30,7 +31,7 @@ end
                 j = e.dst
                 x = [xloc[i]]
                 y = [yloc[i]]
-                headwidth --> 5 
+                headwidth --> rfgp.arrowheadwidth 
                 quiver --> (0.9*[xloc[j]-xloc[i]],0.9*[yloc[j]-yloc[i]])
                 x,y
             end

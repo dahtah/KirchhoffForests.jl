@@ -32,24 +32,24 @@ gplotobj = RFGraphPlot(g,xloc,yloc,yprime,15,3,10,:viridis,true,"\$\\mathbf{y}'\
 plot(gplotobj)
 savefig("gtr-graph.svg");
 
-rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[i in rf.roots for i = 1:nv(g)],15,3,1.2,:viridis,true,"asdsd",25,15,"")
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[i in rf.roots for i = 1:nv(g)],15,3,1.2,:viridis,false,"",15,15,"")
 plot(rfplotobj);
 savefig("gtr-forest.svg");
 
 
-rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xtilde,15,5,5,:viridis,true,"\$\\tilde{\\mathbf{x}}\$",5,5,"")
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xtilde,15,3,1.2,:viridis,true,"\$\\tilde{\\mathbf{x}}\$",15,15,"")
 plot(rfplotobj);
 savefig("gtr-xtilde.svg");
 
-rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xbar,15,5,5,:viridis,true,"\$\\bar{\\mathbf{x}}\$",5,5,"")
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xbar,15,3,1.2,:viridis,true,"\$\\bar{\\mathbf{x}}\$",15,15,"")
 plot(rfplotobj);
 savefig("gtr-xbar.svg");
 
-rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,zbar,15,5,5,:viridis,true,5,5,5"\$\\bar{\\mathbf{z}}\$","")
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,ztilde,15,3,1.2,:viridis,true,"\$\\bar{\\mathbf{z}}\$",15,15,"")
 plot(rfplotobj);
 savefig("gtr-zbar.svg");
 
 
-gplotobj = RFGraphPlot(g,xloc,yloc,xexact,15,5,5,:viridis,true,5,5,5"\$\\hat{\\mathbf{x}}\$","")
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xexact,15,3,1.2,:viridis,true,"\$\\hat{\\mathbf{x}}\$",15,15,"")
 plot(gplotobj);
 savefig("gtr-exact.svg");

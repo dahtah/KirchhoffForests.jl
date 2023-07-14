@@ -9,7 +9,7 @@ mutable struct RFGraphPlot
     cmap :: Symbol
     colorbar :: Bool
     colorbarlabel :: String 
-    colorbar_titlesize :: Number
+    colorbar_titlefontsize :: Number
     colorbar_tickfontsize :: Number
     title :: String
 end

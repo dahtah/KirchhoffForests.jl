@@ -14,8 +14,7 @@ for (x,y) in p
   yloc[i] = y  
 end
 
-
-graphplotobj = RFGraphPlot(g,xloc,yloc,[],25,3,:viridis,false,"","")
+graphplotobj = RFGraphPlot(g,xloc,yloc,yprime,15,3,10,:viridis,false,"",15,15,"")
 plot(graphplotobj)
 savefig("ex_graph.svg")
 

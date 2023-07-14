@@ -90,8 +90,7 @@ idx = [1,4,13,16]
 q = 0.02*ones(nv(g))
 q[idx] .= (16-12*0.02)/4
 rf = random_forest(g,q,rng)
-rf = random_forest(g,1.0,rng)
-forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,repeat([1.0],nv(g)),15,3,:jet,false,"","")
+forestplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,q,15,3,:jet,false,"","")
 plot(forestplotobj)
 savefig("qnonuniform.svg")
 

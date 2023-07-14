@@ -30,7 +30,7 @@ end
                 j = e.dst
                 x = [xloc[i]]
                 y = [yloc[i]]
-                
+                width --> 5 
                 quiver --> (0.9*[xloc[j]-xloc[i]],0.9*[yloc[j]-yloc[i]])
                 x,y
             end

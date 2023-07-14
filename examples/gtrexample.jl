@@ -1,4 +1,4 @@
-using RandomForests,Graphs,LinearAlgebra,Random,Plots
+using Plots,RandomForests,Graphs,LinearAlgebra,Random
 pyplot()
 rng = MersenneTwister(12345); # Set random seed
 g = Graphs.grid([4,4])
@@ -28,28 +28,28 @@ for (x,y) in p
   yloc[i] = y  
 end
 
-gplotobj = RFGraphPlot(g,xloc,yloc,yprime,25,3,:viridis,true,"\$\\mathbf{y}'\$","")
-plot(gplotobj);
+gplotobj = RFGraphPlot(g,xloc,yloc,yprime,15,3,10,:viridis,true,"\$\\mathbf{y}'\$","")
+plot(gplotobj)
 savefig("gtr-graph.svg");
 
-rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[i in rf.roots for i = 1:nv(g)],25,3,:viridis,true,"","")
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,[i in rf.roots for i = 1:nv(g)],15,5,30,:viridis,true,"","")
 plot(rfplotobj);
 savefig("gtr-forest.svg");
 
 
-rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xtilde,25,3,:viridis,true,"\$\\tilde{\\mathbf{x}}\$","")
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xtilde,25,3,10,:viridis,true,"\$\\tilde{\\mathbf{x}}\$","")
 plot(rfplotobj);
 savefig("gtr-xtilde.svg");
 
-rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xbar,25,3,:viridis,true,"\$\\bar{\\mathbf{x}}\$","")
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,xbar,25,3,10,:viridis,true,"\$\\bar{\\mathbf{x}}\$","")
 plot(rfplotobj);
 savefig("gtr-xbar.svg");
 
-rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,zbar,25,3,:viridis,true,"\$\\bar{\\mathbf{z}}\$","")
+rfplotobj = RFGraphPlot(SimpleDiGraph(rf),xloc,yloc,zbar,25,3,10,:viridis,true,"\$\\bar{\\mathbf{z}}\$","")
 plot(rfplotobj);
 savefig("gtr-zbar.svg");
 
 
-gplotobj = RFGraphPlot(g,xloc,yloc,xexact,25,3,:viridis,true,"\$\\hat{\\mathbf{x}}\$","")
+gplotobj = RFGraphPlot(g,xloc,yloc,xexact,25,3,10,:viridis,true,"\$\\hat{\\mathbf{x}}\$","")
 plot(gplotobj);
 savefig("gtr-exact.svg");

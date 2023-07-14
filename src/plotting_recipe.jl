@@ -66,7 +66,7 @@ end
     end
     colorbar --> rfgp.colorbar
     colorbar_title --> rfgp.colorbarlabel
-    colorbar_titlesize --> rfgp.colorbar_titlesize
+    colorbar_titlefontsize --> rfgp.colorbar_titlefontsize
     colorbar_tickfontsize --> rfgp.colorbar_tickfontsize
     primary := false
     ()

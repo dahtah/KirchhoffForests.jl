@@ -1,4 +1,4 @@
-using RandomForests
+using KirchoffForests
 using SimpleWeightedGraphs, Graphs
 #=
 TODO: describe the example

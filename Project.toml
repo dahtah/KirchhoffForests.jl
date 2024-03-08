@@ -1,4 +1,4 @@
-name = "RandomForests"
+name = "KirchoffForests"
 uuid = "e81499c0-f9dc-443f-84b6-a65cdedd22fa"
 authors = ["Simon Barthelme <simon.barthelme@grenoble-inp.fr>"]
 version = "0.1.0"

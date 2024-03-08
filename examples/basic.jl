@@ -1,10 +1,10 @@
-using LightGraphs, RandomForests
+using Graphs, KirchoffForests
 #=
 TODO: describe the example
 =#
 
 #random graph
-G = LightGraphs.SimpleGraph(5, 10)
+G = Graphs.SimpleGraph(5, 10)
 #random signal
 y = randn(5)
 q = 0.1

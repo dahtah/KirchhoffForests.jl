@@ -2,35 +2,29 @@ using RandomForests,Graphs,SimpleWeightedGraphs,SparseArrays
 using Test
 using LinearAlgebra
 
-#test that the result of random_forest is correct
-#ie. it should be a spanning forest, oriented towards the roots
+#test that the result of random_forest is correct, i.e., it should be a spanning forest, oriented towards the roots
 function check_correctness(rf)
     F = SimpleDiGraph(rf)
-    roots =collect(rf.roots)
+    roots = collect(rf.roots)
     @test !is_cyclic(F)
-    @test all(outdegree(F,roots) .== 0)
+    @test all(outdegree(F, roots) .== 0)
     #test that all nodes lead to a root
     for cc in connected_components(F)
-        if length(cc)==1
+        if length(cc) == 1
             @test cc[1] in roots
         else
-            rc = intersect(cc,roots)
+            rc = intersect(cc, roots)
             #there should be a single root per connected component
-            @test length(rc)==1
+            @test length(rc) == 1
             rc = rc[1]
-            bf=bfs_parents(F,rc;dir=-1)[cc]
+            bf = bfs_parents(F, rc; dir=-1)[cc]
             @test all(bf .> 0)
         end
     end
 end
 
-
-
 const testdir = dirname(@__FILE__)
-tests = [
-    "basic","weighted","smoothing","aliascomparison"
-]
-
+tests = ["basic", "weighted", "smoothing", "aliascomparison"]
 @testset "RandomForests" begin
     for t in tests
         tp = joinpath(testdir, "$(t).jl")

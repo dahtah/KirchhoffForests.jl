@@ -41,6 +41,8 @@ inneighbors(g::PreprocessedWeightedGraph, v::Integer) = g.weights[v,:].nzind
 is_directed(::Type{PreprocessedWeightedGraph}) = false
 is_directed(::Type{PreprocessedWeightedGraph{T, U}}) where T where U = false
 is_directed(g::PreprocessedWeightedGraph) = false
+##FIXME: ne should return an integer, and this leads to incorrect results
+##if there are self-edges
 ne(g::PreprocessedWeightedGraph) = nnz(g.weights)/2
 nv(g::PreprocessedWeightedGraph) = size(g.weights,1)
 degree(g::PreprocessedWeightedGraph) = sum(g.weights,dims=1)

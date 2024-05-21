@@ -41,13 +41,13 @@ export
     smooth_ms,
     self_roots,
     random_successor,
-    random_spanning_tree
-    RFGraphPlot
-    newton_poisson_noise
-    admm_edge_lasso
-    SURE
-    root_boundary_track
-    partition_boundary_track
+    random_spanning_tree,
+    RFGraphPlot,
+    newton_poisson_noise,
+    admm_edge_lasso,
+    SURE,
+    root_boundary_track,
+    partition_boundary_track,
     trace_estimator
 #=
 TODO:

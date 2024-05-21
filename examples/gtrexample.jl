@@ -1,4 +1,4 @@
-using Plots,RandomForests,Graphs,LinearAlgebra,Random
+using Plots,KirchoffForests,Graphs,LinearAlgebra,Random
 pyplot()
 rng = MersenneTwister(12345); # Set random seed
 g = Graphs.grid([4,4])

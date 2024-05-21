@@ -1,9 +1,9 @@
 """
-    partition_boundary_track(g::AbstractGraph,rf::RandomForest)
+    partition_boundary_track(g::AbstractGraph,rf::KirchoffForest)
 
 Helper function for computing control variates in trace estimation. Given a forest `rf` in graph `g`, this method returns a ``n\\times 1`` vector `boundary_track` where `boundary_track[i]` is the number of neighbors of node ``i`` that do not have the same root with ``i`` in `rf`.
 """
-function partition_boundary_track(g::AbstractGraph,rf::RandomForest)
+function partition_boundary_track(g::AbstractGraph,rf::KirchoffForest)
     boundary_track = zeros(nv(g))
     for i = 1 : nv(g)
         neighs = neighbors(g,i)
@@ -13,11 +13,11 @@ function partition_boundary_track(g::AbstractGraph,rf::RandomForest)
 end
 
 """
-    root_boundary_track(g::AbstractGraph,rf::RandomForest)
+    root_boundary_track(g::AbstractGraph,rf::KirchoffForest)
 
 Helper function for computing control variates in trace estimation. Given a forest `rf` in graph `g`, this method returns a vector `boundary_track` (in size of the roots of `rf`) where `boundary_track[i]` is the number of neighbors of ``i``-th root that are not rooted in ``i``-th root in `rf`.
 """
-function root_boundary_track(g::AbstractGraph,rf::RandomForest)
+function root_boundary_track(g::AbstractGraph,rf::KirchoffForest)
     boundary_track = zeros(length(rf.roots))
     for (idx,i) in enumerate(rf.roots)
         neighs = neighbors(g,i)
@@ -173,7 +173,7 @@ function random_forest_cond_first_layer(G::AbstractGraph,q::Real,roots::BitSet;p
             u = next[u]
         end
     end
-    RandomForest(next,roots,nroots,root)
+    KirchoffForest(next,roots,nroots,root)
 end
 
 

@@ -1,5 +1,5 @@
 push!(LOAD_PATH,"../src/")
-using Documenter, RandomForests
+using Documenter, KirchoffForests
 using DocumenterCitations
 bib = CitationBibliography("./src/references.bib")
 makedocs(bib,pages=[
@@ -9,4 +9,4 @@ makedocs(bib,pages=[
 "Trace Estimation" =>"trace.md",
 "Types and Functions" => "typesandfunc.md",
 "References" => "references.md"
-],sitename="RandomForests.jl")
+],sitename="KirchoffForests.jl")

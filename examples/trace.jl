@@ -1,4 +1,4 @@
-using RandomForests,Graphs,LinearAlgebra,PyPlot, StatsBase,ProgressBars
+using KirchoffForests,Graphs,LinearAlgebra,PyPlot, StatsBase,ProgressBars
 n = 10000
 g = barabasi_albert(n,10)
 L = Matrix(laplacian_matrix(g))

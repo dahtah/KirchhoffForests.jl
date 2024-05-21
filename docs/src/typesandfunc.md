@@ -1,6 +1,6 @@
 # Types and Functions
 
 ```@autodocs
-Modules = [RandomForests]
+Modules = [KirchoffForests]
 Order   = [:type, :function]
 ```

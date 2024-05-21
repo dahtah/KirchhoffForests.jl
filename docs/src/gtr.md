@@ -19,9 +19,9 @@ This estimator, defined as $\tilde{x}_i \coloneqq y'_{r_{\Phi_Q}(i)}$, operates 
 - Then, within each tree of the sampled forest, propagate the measurement in the root.
 See [pilavci2021graph](@cite) for more details.
 
-This estimator can be called in RandomForest.jl as follows:
+This estimator can be called in KirchoffForests.jl as follows:
 ```@jldoctest
-julia> using RandomForests,Graphs,LinearAlgebra,Random,PyPlot
+julia> using KirchoffForests,Graphs,LinearAlgebra,Random,PyPlot
 
 julia> rng = MersenneTwister(12345); # Set random seed
 

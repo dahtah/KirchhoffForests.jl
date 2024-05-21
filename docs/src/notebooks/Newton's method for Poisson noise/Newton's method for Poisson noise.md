@@ -36,7 +36,7 @@ where $\mathbf{h}=\left[\frac{\partial L(\mathbf{x})}{\partial{x_i}}\right]_i$ c
 
 
 ```julia
-using RandomForests
+using KirchoffForests
 ```
 
     [36m[1m[ [22m[39m[36m[1mInfo: [22m[39mPrecompiling RandomForests [e81499c0-f9dc-443f-84b6-a65cdedd22fa]

@@ -63,9 +63,9 @@ The following animation illustrates Wilson's algorithm on a 4x4 grid graph for s
 </table>
 ```
 
-In RandomForest.jl, one can call this algorithm as follows:
+In KirchoffForests.jl, one can call this algorithm as follows:
 ```@jldoctest
-julia> using RandomForests,Graphs
+julia> using KirchoffForests,Graphs
 
 julia> q = 1.0
 1.0
@@ -100,7 +100,7 @@ where $Q=(q_1,\dots,q_n)\in\mathbb{R}^{|\mathcal{V}|}$ and $Z_Q$ is the correspo
 ```
 This is also implemented in this package:
 ```@jldoctest
-julia>  using RandomForests,Graphs
+julia>  using KirchoffForests,Graphs
 
 julia> g = grid([4,4])
 {16, 24} undirected simple Int64 graph

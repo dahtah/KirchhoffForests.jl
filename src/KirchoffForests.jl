@@ -1,6 +1,6 @@
 module KirchoffForests
 
-using LinearAlgebra, SparseArrays
+using LinearAlgebra, SparseArrays,RecipeBase
 import Base:
     show,
     sum
@@ -233,10 +233,14 @@ function SimpleDiGraph(rf::KirchoffForest)
     return ff
 end
 
+include("random_forest_with_seeds.jl")
 include("random_spanning_tree.jl")
 include("smoothing.jl")
 include("moments.jl")
 include("multiscale.jl")
-
+include("optimization.jl")
+include("paramselection.jl")
+include("efficient_smoothing.jl")
+include("plotting_recipe.jl")
 
 end # module

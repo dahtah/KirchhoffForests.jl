@@ -1,6 +1,9 @@
-using KirchoffForests,Graphs,SimpleWeightedGraphs,SparseArrays
+using KirchoffForests,Graphs,SimpleWeightedGraphs,SparseArrays,Random,Metrics
 using Test
 using LinearAlgebra
+using PyCall
+using StatsBase
+
 
 #test that the result of random_forest is correct, i.e., it should be a spanning forest, oriented towards the roots
 function check_correctness(rf)
@@ -24,7 +27,7 @@ function check_correctness(rf)
 end
 
 const testdir = dirname(@__FILE__)
-tests = ["basic", "weighted", "smoothing", "aliascomparison"]
+tests = ["basic", "weighted", "smoothing", "aliascomparison","cv","smoothing_eff"]
 @testset "KirchoffForests" begin
     for t in tests
         tp = joinpath(testdir, "$(t).jl")

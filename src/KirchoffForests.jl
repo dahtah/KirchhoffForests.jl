@@ -42,6 +42,8 @@ export
     self_roots,
     random_successor,
     random_spanning_tree,
+    smooth_rf_xtilde,
+    smooth_rf_xbar,
     RFGraphPlot,
     newton_poisson_noise,
     admm_edge_lasso,

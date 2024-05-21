@@ -42,7 +42,7 @@ function random_spanning_tree(g::SimpleGraph{T}, r::Integer; force=false) where 
     in_tree = falses(n)
     next = zeros(T, n)
 
-    in_tree[root] = true
+    in_tree[r] = true
 
     # Natural loop-erased random walk
     for v in vertices(g)

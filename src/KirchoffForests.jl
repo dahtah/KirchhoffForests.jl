@@ -48,6 +48,7 @@ export
     root_boundary_track
     partition_boundary_track
     trace_estimator
+using RecipeBase
 #=
 TODO:
 - need clean up using and import

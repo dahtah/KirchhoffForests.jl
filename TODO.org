@@ -1,0 +1,44 @@
+* TODO Tidying up
+
+- Write basic tests
+  - [X] Correctness in weighted/unweighted cases
+  - [X] Smoothing
+- [ ] Write package doc
+- [X] Add type for random_forest result
+
+* TODO Moment estimators
+
+- Include basic moment estimators (first order and above)
+
+* TODO Weighted graphs
+
+- Should test in a few instances, maybe weighted diffusion on images
+- Current implementation of random_successor has cost O(d_i), which is bad.
+  Should try to reduce it. Pre-processing can achieve a cost reduction: we need
+  to go through every node and either (a) build a binary search tree to sample
+  in O(log d_i) or (b) use Walker's alias method to sample in O(1). This means a
+  cost of O(nd) upfront.  
+
+* Partition
+
+- The current implementation of the partition structure is inefficient and
+  should be upgraded to something better. The main challenge is that one gets a
+  vector of root indices, e.g., [5 2 2 4 5] and we need to implement the
+  following operations (a) average over groups (b) propagate averages and (c)
+  (future work) compute overlap between partitions for Rao-Blackwellised moment
+  estimators.
+
+* Micro-optimisations
+
+- In random_forest, q/(q+d[i]) is computed at each visit, but need only be
+  computed once
+
+* Medium term
+
+- Generalise implementation of Wilson's alg. to weighted graphs, in an efficient
+  manner. Problem: the SimpleWeightedGraph class uses a sparse matrix to store
+  weights, which makes random lookups very inefficient. Should implement a type
+  that uses a list of lists. Maybe ask the JuliaGraphs folks? 
+- Improve implementation of smoothing: we can directly compute average on the
+  tree using a forward-backward loop. 
+

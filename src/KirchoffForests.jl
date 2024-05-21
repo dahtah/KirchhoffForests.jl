@@ -1,6 +1,6 @@
 module KirchoffForests
 
-using LinearAlgebra, SparseArrays,RecipeBase
+using LinearAlgebra, SparseArrays
 import Base:
     show,
     sum
@@ -41,8 +41,13 @@ export
     self_roots,
     random_successor,
     random_spanning_tree
-
-
+    RFGraphPlot
+    newton_poisson_noise
+    admm_edge_lasso
+    SURE
+    root_boundary_track
+    partition_boundary_track
+    trace_estimator
 #=
 TODO:
 - need clean up using and import
@@ -242,5 +247,6 @@ include("optimization.jl")
 include("paramselection.jl")
 include("efficient_smoothing.jl")
 include("plotting_recipe.jl")
+include("trace.jl")
 
 end # module

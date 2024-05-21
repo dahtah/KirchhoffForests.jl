@@ -24,7 +24,7 @@ import SimpleWeightedGraphs:
     AbstractSimpleWeightedGraph
 
 include("./alias.jl")
-using RecipeBase
+using RecipesBase ## package for plotting 
 
 export
     random_forest,

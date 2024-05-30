@@ -12,7 +12,7 @@ Here we give efficient RSF-based estimators for approximating the trace of regul
 
 One can access the number of roots in the sampled forest as follows:
 ```@jldoctest
-julia> using RandomForests,Graphs
+julia> using KirchoffForests,Graphs
 
 julia> g = grid([4,4])
 {16, 24} undirected simple Int64 graph
@@ -56,7 +56,7 @@ For certain allocations of samples $N_k$'s, the theoretical variance of $\mu_{st
 All of these techniques are implemented in [`trace_estimator`](@ref) as different variants. Here is an example comparing all these methods: 
 
 ```julia 
-using RandomForests,Graphs,LinearAlgebra,PyPlot, StatsBase
+using KirchoffForests,Graphs,LinearAlgebra,PyPlot, StatsBase
 pygui(true)
 n = 10000
 g = barabasi_albert(n,10)

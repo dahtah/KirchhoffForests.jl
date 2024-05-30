@@ -122,11 +122,11 @@ function plot_tree(rt::NamedTuple;param::PlotParam=PlotParam([],[],true,[],200,2
 end
 
 """
-    plot_forest(rf::RandomForest;param::PlotParam=PlotParam([],[],true,[],200,2,:viridis,false,"",""))
+    plot_forest(rf::KirchoffForest;param::PlotParam=PlotParam([],[],true,[],200,2,:viridis,false,"",""))
 
 Function to plot a forest by showing the roots or a graph signal over the vertices. Plotting parameters can be set by using the struct ```PlotParam```.
 """
-function plot_forest(rf::RandomForest;param::PlotParam=PlotParam([],[],true,[],200,2,:viridis,false,"",""))
+function plot_forest(rf::KirchoffForest;param::PlotParam=PlotParam([],[],true,[],200,2,:viridis,false,"",""))
     g = SimpleDiGraph(rf)
     xloc = zeros(nv(g))
     yloc = zeros(nv(g))

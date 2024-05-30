@@ -1,6 +1,6 @@
 
 ```@setup 1
-using Plots,Graphs,RandomForests,Random
+using Plots,Graphs,KirchoffForests,Random
 pyplot()
 
 g = Graphs.grid([4,4])
@@ -32,7 +32,7 @@ savefig("ex_forest.svg")
 ```
 
 ```@setup 2
-using Graphs,RandomForests,Plots,Random
+using Graphs,KirchoffForests,Plots,Random
 pyplot()
 
 g = Graphs.grid([4,4])
@@ -66,7 +66,7 @@ savefig("q=5.0.svg")
 ```
 
 ```@setup 3
-using Graphs,Plots,RandomForests,Random
+using Graphs,Plots,KirchoffForests,Random
 pyplot()
  
 g = Graphs.grid([4,4])
@@ -94,10 +94,10 @@ plot(forestplotobj)
 savefig("qnonuniform.svg")
 
 ```
-# RandomForests.jl: a Julia package for Random Forests on Graphs, and Applications
+# KirchoffForests.jl: a Julia package for Random Forests on Graphs, and Applications
 
-## Welcome to the Documentation of RandomForest.jl
-A random spanning forest (RSF) is a special random object on graph/networks which has elegant theoretical links with graph Laplacians and wide set of applications in graph signal processing and machine learning.  
+## Welcome to the Documentation of KirchoffForest.jl
+A random spanning forest (RSF) is a special random object on graph/networks which has elegant theoretical links with graph Laplacians and a wide set of applications in graph signal processing and machine learning.  
 
 This package is dedicated to implementing:
 - Sampling algorithms for RSFs
@@ -112,7 +112,7 @@ This package is dedicated to implementing:
 ## Installation Instructions
 The package is not registered yet. Therefore, you can install it as follows:
 ```@julia
-julia> ] add https://gricad-gitlab.univ-grenoble-alpes.fr/barthesi/RandomForests.jl
+julia> ] add https://github.com/dahtah/KirchoffForests.jl
 ```
 
 ## Table of Contents

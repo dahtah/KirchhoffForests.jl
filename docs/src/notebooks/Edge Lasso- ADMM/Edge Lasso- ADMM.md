@@ -16,7 +16,7 @@ In other words, $\mathsf{B}\mathbf{x}$ computes the gradients of the signal $\ma
 
 
 ```julia
-using RandomForests
+using KirchoffForests
 using Graphs
 using StatsBase
 using Distributions

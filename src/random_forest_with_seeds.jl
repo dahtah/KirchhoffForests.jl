@@ -30,7 +30,7 @@ function random_forest(G::AbstractGraph,q::Number,rng::AbstractRNG)
             u = next[u]
         end
     end
-    RandomForest(next,roots,nroots,root)
+    KirchoffForest(next,roots,nroots,root)
 end
 
 function random_forest(G::AbstractGraph,q::Number,B::AbstractVector,rng::AbstractRNG)
@@ -64,7 +64,7 @@ function random_forest(G::AbstractGraph,q::Number,B::AbstractVector,rng::Abstrac
             u = next[u]
         end
     end
-    RandomForest(next,roots,nroots,root)
+    KirchoffForest(next,roots,nroots,root)
 end
 
 
@@ -103,7 +103,7 @@ function random_forest(G::AbstractGraph,q::AbstractVector,rng::AbstractRNG)
             u = next[u]
         end
     end
-    RandomForest(next,roots,nroots,root)
+    KirchoffForest(next,roots,nroots,root)
 end
 
 function random_forest(G::AbstractGraph,q::AbstractVector,B::AbstractVector,rng::AbstractRNG)
@@ -141,7 +141,7 @@ function random_forest(G::AbstractGraph,q::AbstractVector,B::AbstractVector,rng:
             u = next[u]
         end
     end
-    RandomForest(next,roots,nroots,root)
+    KirchoffForest(next,roots,nroots,root)
 end
 
 

@@ -1,8 +1,8 @@
 """
-    random_spanning_tree(g,[r])
+    random_spanning_tree(g, [r])
 
-Generate a (uniform) random spanning tree using Wilson's algorithm.
-A spanning tree of g is a connected subgraph of g that's cycle-free, i.e. a tree that includes only edges from g and connects every node.
+Generate a (uniform) random spanning tree (https://en.wikipedia.org/wiki/Spanning_tree) using Wilson's algorithm (https://dl.acm.org/doi/10.1145/237814.237880).
+A spanning tree of connected graph g is a connected subgraph of g that's cycle-free, i.e. a tree that includes only edges from g and connects every node.
 If you specify the root of the tree, the function produces a spanning tree that is picked uniformly among all trees rooted at r.
 If you do not specify a root, the function produces a random tree from g, picking *uniformly* among all spanning trees of g (over all possible roots).
 
@@ -10,8 +10,8 @@ NB: a graph must be connected in order to have a spanning tree. By default, the 
 
 ### Arguments
 - g: a graph
-- optional: r, index of a node to serve as the root
-- force: if true, skip the connectivity test
+- optional: r, index of a node to serve as root
+- force: if true, skip connectivity test
 
 ### Output
 If the root is specified, returns a tree, represented as a SimpleDiGraph. If it isn't, returns a named tuple with "tree": the tree and "root": the root.
@@ -29,48 +29,52 @@ julia> random_spanning_tree(g).tree |> edges |> collect
  Edge 3 => 4
  Edge 4 => 1
 ```
+TODO: Maybe consider the function random_spanning_tree as a meta function with a switch wilson / aldous..
 """
-function random_spanning_tree(g :: SimpleGraph{T}, r :: Integer; force=false) where T
+function random_spanning_tree(g::SimpleGraph{T}, r::Integer; force=false) where T
+
     r in vertices(g) || throw(BoundsError("Root r must be one of the vertices"))
-    if (!force)
+    if !force
         is_connected(g) || throw(ArgumentError("Graph must be connected"))
     end
 
     n = nv(g)
     in_tree = falses(n)
-    next = zeros(T,n)
+    next = zeros(T, n)
+
     in_tree[r] = true
-    # we follow closely Wilson's extremely elegant pseudo-code
-    for i in vertices(g)
-        u = i
-        while !in_tree[u] #run a loop-erased random walk
-            nn = outneighbors(g, u)
-            length(nn) == 0 && throw(ArgumentError("No spanning tree with this root exists"))
-            next[u]= rand(nn)
-            u = next[u]
+
+    # Natural loop-erased random walk
+    for v in vertices(g)
+        # Natural walk on the graph until meet a "in_tree" vertex
+        current_v = v
+        while !in_tree[current_v]
+            nghbrs = outneighbors(g, current_v)
+            next[current_v] = rand(nghbrs)  # empty handled by rand
+            current_v = next[current_v]
         end
-        #Retrace steps, erasing loops
-        u = i
-        while !in_tree[u]
-            in_tree[u] = true
-            u = next[u]
+        # Retrace steps, erase loops, keep only path v -> first loopy vertex
+        current_v = v
+        while !in_tree[current_v]
+            in_tree[current_v] = true
+            current_v = next[current_v]
         end
     end
-    return tree_from_next(next,vertices(g))
+    return tree_from_next(next, vertices(g))
 end
 
 #nb: roots are uniformly distributed in an undirected graph
-function random_spanning_tree(g :: SimpleGraph{T}; force=false) where T
+function random_spanning_tree(g::SimpleGraph{T}; force=false) where T
     root = rand(vertices(g))
-    tree = random_spanning_tree(g,root;force=force)
-    (root=root,tree=tree)
+    tree = random_spanning_tree(g, root; force=force)
+    return (root=root, tree=tree)
 end
 
 # Given a vector of pointers "next", make a tree of DiGraph type
-function tree_from_next(next :: Array{T,1}, nodes :: AbstractArray{T,1}) where T
+function tree_from_next(next::Array{T,1}, nodes::AbstractArray{T,1}) where T
     tree = SimpleDiGraph{T}(length(next))
     for v in nodes
-        next[v] > 0 && add_edge!(tree,v,next[v])
+        next[v] > 0 && add_edge!(tree, v, next[v])
     end
-    tree
+    return tree
 end

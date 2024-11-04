@@ -1,4 +1,4 @@
-module KirchoffForests
+module KirchhoffForests
 
 using LinearAlgebra, SparseArrays
 import Base:
@@ -30,7 +30,7 @@ export
     smooth,
     smooth_rf,
     smooth_rf_adapt,
-    KirchoffForest,
+    KirchhoffForest,
     SimpleDiGraph,
     nroots,
     next,
@@ -53,31 +53,31 @@ to then call LG.whatever_function
 =#
 
 
-struct KirchoffForest
+struct KirchhoffForest
     next::Array{Int}  # todo what size?
     roots::Set{Int}
     nroots::Int
     root::Array{Int,1}
 end
 
-function show(io::IO, rf::KirchoffForest)
+function show(io::IO, rf::KirchhoffForest)
     println(io, "Random forest. Size of original graph $(nv(rf)).")
     println(io, "Number of trees $(nroots(rf))")
 end
 
-nv(rf::KirchoffForest) = length(rf.next)
-nroots(rf::KirchoffForest) = rf.nroots
-ne(rf::KirchoffForest) = nv(rf) - nroots(rf)
+nv(rf::KirchhoffForest) = length(rf.next)
+nroots(rf::KirchhoffForest) = rf.nroots
+ne(rf::KirchhoffForest) = nv(rf) - nroots(rf)
 
 """
-    next(rf::KirchoffForest)
+    next(rf::KirchhoffForest)
 
 Return a vector of indices v, where v[i] = j means that node i points to node j
 in the forest. If v[i] = 0 i is a root.
 """
-next(rf::KirchoffForest) = rf.next
+next(rf::KirchhoffForest) = rf.next
 
-outneighbors(rf::KirchoffForest,i) = rf.next[i] > 0 ? [rf.next[i]] : Array{Int64,1}()
+outneighbors(rf::KirchhoffForest,i) = rf.next[i] > 0 ? [rf.next[i]] : Array{Int64,1}()
 
 """
     random_forest(G::AbstractGraph,q)
@@ -137,7 +137,7 @@ function random_forest(G::AbstractGraph, q)
         end
     end
 
-    return KirchoffForest(next, roots, nroots, root)
+    return KirchhoffForest(next, roots, nroots, root)
 end
 
 function random_forest(G::AbstractGraph, q::AbstractVector)
@@ -174,7 +174,7 @@ function random_forest(G::AbstractGraph, q::AbstractVector)
             u = next[u]
         end
     end
-    KirchoffForest(next, roots, nroots, root)
+    KirchhoffForest(next, roots, nroots, root)
 end
 
 """
@@ -211,9 +211,9 @@ end
 
 
 """
-    SimpleDiGraph(rf::KirchoffForest)
+    SimpleDiGraph(rf::KirchhoffForest)
 
-Convert a KirchoffForest rf to a SimpleDiGraph.
+Convert a KirchhoffForest rf to a SimpleDiGraph.
 
 # Example
 
@@ -224,7 +224,7 @@ f = SimpleDiGraph(rf)
 connected_components(f)
 ```
 """
-function SimpleDiGraph(rf::KirchoffForest)
+function SimpleDiGraph(rf::KirchhoffForest)
     n = length(rf.next)
     ff = SimpleDiGraph(n)
     for i in 1:n

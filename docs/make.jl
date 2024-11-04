@@ -1,3 +1,3 @@
 push!(LOAD_PATH,"../src/")
-using Documenter, KirchoffForests
-makedocs(sitename="KirchoffForests.jl")
+using Documenter, KirchhoffForests
+makedocs(sitename="KirchhoffForests.jl")

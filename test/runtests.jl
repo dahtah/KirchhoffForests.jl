@@ -1,4 +1,4 @@
-using KirchoffForests,Graphs,SimpleWeightedGraphs,SparseArrays
+using KirchhoffForests,Graphs,SimpleWeightedGraphs,SparseArrays
 using Test
 using LinearAlgebra
 
@@ -25,7 +25,7 @@ end
 
 const testdir = dirname(@__FILE__)
 tests = ["basic", "weighted", "smoothing", "aliascomparison"]
-@testset "KirchoffForests" begin
+@testset "KirchhoffForests" begin
     for t in tests
         tp = joinpath(testdir, "$(t).jl")
         include(tp)

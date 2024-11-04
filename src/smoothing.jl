@@ -6,7 +6,7 @@ struct Partition
     sizep::Array{Int, 1}
 end
 
-function Partition(rf::KirchoffForest)
+function Partition(rf::KirchhoffForest)
     part = Int.(denserank(rf.root))
     sizep = counts(part)
     return Partition(part, rf.nroots, sizep)
@@ -169,7 +169,7 @@ function smooth_rf(g::AbstractGraph, q::Vector, Y; nrep=10, variant=1, mean_corr
 end
 
 """
-*(rf::KirchoffForest, Y::Matrix)
+*(rf::KirchhoffForest, Y::Matrix)
 
 Treating the random forest as a linear operator, propagate the value of y at
 the root to the rest of the tree.
@@ -182,8 +182,8 @@ rf = random_forest(g, .5)
 rf*collect(1:nv(g))
 ```
 """
-Base.:*(rf::KirchoffForest, Y::Matrix) = Y[rf.root, :]
-Base.:*(rf::KirchoffForest, Y::Vector) = Y[rf.root]
+Base.:*(rf::KirchhoffForest, Y::Matrix) = Y[rf.root, :]
+Base.:*(rf::KirchhoffForest, Y::Vector) = Y[rf.root]
 
 """
 *(p::Partition, Y::Matrix)

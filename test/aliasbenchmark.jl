@@ -1,4 +1,4 @@
-using BenchmarkTools,SimpleWeightedGraphs,Graphs,KirchoffForests
+using BenchmarkTools,SimpleWeightedGraphs,Graphs,KirchhoffForests
 
 g = grid([50,50])
 gw = SimpleWeightedGraph(g)

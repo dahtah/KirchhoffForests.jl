@@ -1,6 +1,6 @@
-# KirchoffForests.jl 
+# KirchhoffForests.jl 
 
-A repository of code related to Kirchoff forests on graphs and associated estimators. This code is experimental, don't use it for anything serious (yet).
+A repository of code related to Kirchhoff forests on graphs and associated estimators. This code is experimental, don't use it for anything serious (yet).
 
 Authors: Simon Barthelmé, Nicolas Tremblay, Yusuf Yigit Pilavci, Guillaume Gautier (CNRS, Gipsa-lab).
 

@@ -1,4 +1,4 @@
-using Graphs, KirchoffForests
+using Graphs, KirchhoffForests
 #=
 TODO: describe the example
 =#

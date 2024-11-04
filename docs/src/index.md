@@ -1,4 +1,4 @@
-# KirchoffForests.jl: a Julia package for Random Forests on Graphs, and Applications
+# KirchhoffForests.jl: a Julia package for Random Forests on Graphs, and Applications
 
 ## What's a random forest? 
 
@@ -73,6 +73,6 @@ where:
 ## Functions and types
 
 ```@autodocs
-Modules = [KirchoffForests]
+Modules = [KirchhoffForests]
 Order   = [:function, :type]
 ```

@@ -42,7 +42,7 @@ function random_spanning_tree(g::SimpleGraph{T}, r::Integer; force=false) where 
     in_tree = falses(n)
     next = zeros(T, n)
 
-    in_tree[root] = true
+    in_tree[r] = true
 
     # Natural loop-erased random walk
     for v in vertices(g)
@@ -50,7 +50,7 @@ function random_spanning_tree(g::SimpleGraph{T}, r::Integer; force=false) where 
         current_v = v
         while !in_tree[current_v]
             nghbrs = outneighbors(g, current_v)
-            next[current_v] = rand(rng, nghbrs)  # empty handled by rand
+            next[current_v] = rand(nghbrs)  # empty handled by rand
             current_v = next[current_v]
         end
         # Retrace steps, erase loops, keep only path v -> first loopy vertex

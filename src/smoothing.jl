@@ -120,7 +120,7 @@ function smooth(g::AbstractGraph{T}, q::Vector, Y::SparseMatrixCSC) where T
     return C \ (Q * Y)
 end
 
-function smooth_rf(g::AbstractGraph, q::Float64, Y; nrep=10, variant=1, mean_correction=false)
+function smooth_rf(g::AbstractGraph, q::Number, Y; nrep=10, variant=1, mean_correction=false)
     xhat = zeros(size(Y))
     nr = 0
     Ym = 0

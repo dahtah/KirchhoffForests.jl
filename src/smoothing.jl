@@ -107,13 +107,13 @@ function smooth(g::AbstractGraph{T}, q::Vector, Y) where T
     return (L + Q) \ (Q * Y)
 end
 
-function smooth(g::AbstractGraph{T}, q::Float64, Y::SparseMatrixCSC) where T
+function smooth(g::AbstractGraph{T}, q::Float64, Y) where T
     L = laplacian_matrix(g)
     C = cholesky(L + q*I)
     return q * (C \ Y)
 end
 
-function smooth(g::AbstractGraph{T}, q::Vector, Y::SparseMatrixCSC) where T
+function smooth(g::AbstractGraph{T}, q::Vector, Y) where T
     L = laplacian_matrix(g)
     Q = diagm(0 => q)
     C = cholesky(L + Q)

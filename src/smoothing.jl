@@ -103,7 +103,8 @@ smooth(g, 10.1, y)
 """
 function smooth(g::AbstractGraph{T}, q::Vector, Y) where T
     L = laplacian_matrix(g)
-    Q = diagm(0 => q)  # TODO potentially use .=>
+    #Q = diagm(0 => q)  # TODO potentially use .=>
+    Q = Diagonal(q)
     return (L + Q) \ (Q * Y)
 end
 
@@ -113,12 +114,12 @@ function smooth(g::AbstractGraph{T}, q::Float64, Y) where T
     return q * (C \ Y)
 end
 
-function smooth(g::AbstractGraph{T}, q::Vector, Y) where T
-    L = laplacian_matrix(g)
-    Q = diagm(0 => q)
-    C = cholesky(L + Q)
-    return C \ (Q * Y)
-end
+# function smooth(g::AbstractGraph{T}, q::Vector, Y) where T
+#     L = laplacian_matrix(g)
+#     Q = diagm(0 => q)
+#     C = cholesky(L + Q)
+#     return C \ (Q * Y)
+# end
 
 function smooth_rf(g::AbstractGraph, q::Number, Y; nrep=10, variant=1, mean_correction=false)
     xhat = zeros(size(Y))
